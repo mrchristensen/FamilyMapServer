@@ -1,12 +1,27 @@
 package result;
 
+import model.Person;
+
 /**
- * Reports success or failure
+ * Response body for the /person API call
  */
 public class PersonResult extends Result {
     /**
-     * Handle the output of gson to json conversion
+     * Array of Person objects
      */
-    void gsonOutputHandling(){
+    Person[] data;
+
+    /**
+     * Default constructor
+     */
+    public PersonResult() {
+    }
+
+    /**
+     * Proper constructor for a successful response body for the /person api call
+     * @param data And array of person objects
+     */
+    public PersonResult(Person[] data) {
+        this.data = data;
     }
 }

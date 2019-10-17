@@ -1,14 +1,16 @@
 package result;
 
+import model.*;
+
 /**
- * Reports success or failure
+ * Response body for the Register API call
  */
 public class RegisterResult extends Result {
 
     /**
      * Non-empty auth token string
      */
-    String authToken;
+    AuthToken authToken;
 
     /**
      * User name passed in with request
@@ -27,22 +29,22 @@ public class RegisterResult extends Result {
     }
 
     /**
-     * Proper constructor
+     * Proper constructor to return a register response body
      * @param authToken Non-empty auth token
      * @param userName User name of the user
      * @param personID The Person ID of the user's generated Person object
      */
-    public RegisterResult(String authToken, String userName, String personID) {
+    public RegisterResult(AuthToken authToken, String userName, String personID) {
         this.authToken = authToken;
         this.userName = userName;
         this.personID = personID;
     }
 
-    public String getAuthToken() {
+    public AuthToken getAuthToken() {
         return authToken;
     }
 
-    public void setAuthToken(String authToken) {
+    public void setAuthToken(AuthToken authToken) {
         this.authToken = authToken;
     }
 

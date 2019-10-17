@@ -5,7 +5,7 @@ package model;
  */
 public class Person {
 
-    public Person(String personID, String associatedUsername, String firstName, String lastName, String gender) {
+    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender) {
         this.personID = personID;
         this.associatedUsername = associatedUsername;
         this.firstName = firstName;
@@ -15,7 +15,7 @@ public class Person {
         this.motherID = motherID;
     }
 
-    public Person(String personID, String associatedUsername, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID) {
+    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender, String fatherID, String motherID, String spouseID) {
         this.personID = personID;
         this.associatedUsername = associatedUsername;
         this.firstName = firstName;
@@ -53,7 +53,7 @@ public class Person {
     /**
      * Person's gender (string: "f" or "m")
      */
-    String gender;
+    char gender;
 
     /**
      * Person ID of person's father (possibly null)

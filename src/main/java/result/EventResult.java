@@ -1,12 +1,27 @@
 package result;
 
+import model.Event;
+
 /**
- * Reports success or failure
+ * Response body for the /event API call
  */
 public class EventResult extends Result {
     /**
-     * Handle the output of gson to json conversion
+     * Array of Event objects
      */
-    void gsonOutputHandling(){
+    Event[] data;
+
+    /**
+     * Default constructor
+     */
+    public EventResult() {
+    }
+
+    /**
+     * Proper constructor for a successful response body for the /person api call
+     * @param data And array of event objects
+     */
+    public EventResult(Event[] data) {
+        this.data = data;
     }
 }
