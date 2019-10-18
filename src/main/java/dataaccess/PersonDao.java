@@ -1,37 +1,65 @@
 package dataaccess;
 
+import exceptions.DataAccessException;
 import model.AuthToken;
+import model.Event;
 import model.Person;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Handles all database operations for persons
  */
 public class PersonDao extends Dao {
-    /**
-     * Adds a new person to the database
-     * @param personID the id of the person to add
-     * @param associatedUsername the username of the current user
-     * @param firstName the first name of the new person
-     * @param lastName the last name of the new person
-     * @param gender the gender of the new person
-     * @param spouseID the personID of the spouse of the new person
-     * @param fatherID the personID of the father of the new person
-     * @param motherID the personID of the mother of the new person
-     */
-    void insertPerson(String personID, String associatedUsername, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID){
+    private final Connection conn;
+
+    public PersonDao(Connection conn)
+    {
+        this.conn = conn;
     }
 
     /**
-     * Delete an person from the database
-     * @param personID The ID of the person to remove
+     * Adds a new person to the database
      */
-    void removePerson(String personID){
+    void insert(Person myPerson) throws DataAccessException {
+        //We can structure our string to be similar to a sql command, but if we insert question
+        //marks we can change them later with help from the statement
+        String sql = "INSERT INTO Persons (ID, associatedUsername, firstName, lastName, gender, " +
+                "fatherID, motherID, spouseID) VALUES(?,?,?,?,?,?,?,?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            //Using the statements built-in set(type) functions we can pick the question mark we want
+            //to fill in and give it a proper value. The first argument corresponds to the first
+            //question mark found in our sql String
+            stmt.setString(1, myPerson.getPersonID());
+            stmt.setString(2, myPerson.getAssociatedUsername());
+            stmt.setString(3, myPerson.getFirstName());
+            stmt.setString(4, myPerson.getLastName());
+            stmt.setString(5, myPerson.getGender());
+            stmt.setString(6, myPerson.getFatherID());
+            stmt.setString(7, myPerson.getMotherID());
+            stmt.setString(8, myPerson.getSpouseID());
+
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while inserting into the database");
+        }
     }
+
+//    /**
+//     * Delete an person from the database
+//     * @param personID The ID of the person to remove
+//     */
+//    void removePerson(String personID){
+//    }
 
     /**
      * Deletes all persons from the database
      */
-    void removeAllPersons(){
+    void removeAll(){
     }
 
     /**
@@ -39,17 +67,42 @@ public class PersonDao extends Dao {
      * @param personID The ID of the desired person
      * @return The person object of the desired person
      */
-    Person getPerson(String personID){
+    Person get(String personID) throws DataAccessException {
+        Person person;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM Persons WHERE ID = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, personID);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                person = new Person(rs.getString("ID"), rs.getString("AssociatedUsername"),
+                        rs.getString("firstName"), rs.getString("lastName"), rs.getString("gender"),
+                        rs.getString("fatherID"), rs.getString("motherID"), rs.getString("spouseID"));
+                return person;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding event");
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
         return null;
     }
 
-    /**
-     * Retrieves all persons of all family of the current user (from the database)
-     * @param userAuthToken The auth token of the current user
-     * @return Array of all persons in the database (of all family members of user)
-     */
-    Person[] getAllAncestralPersons(AuthToken userAuthToken){
-        return null;
-    }
+//    /**
+//     * Retrieves all persons of all family of the current user (from the database)
+//     * @param userAuthToken The auth token of the current user
+//     * @return Array of all persons in the database (of all family members of user)
+//     */
+//    Person[] getAllAncestralPersons(AuthToken userAuthToken){
+//        return null;
+//    }
 
 }

@@ -107,7 +107,7 @@ public class Database {
 
             String sqlPersonTable = "CREATE TABLE if not exists Persons" +
                     "(" +
-                    "ID INTEGER NOT NULL," +
+                    "ID TEXT NOT NULL UNIQUE," +
                     "associatedUsername TEXT NOT NULL," +
                     "firstName TEXT NOT NULL," +
                     "lastName TEXT NOT NULL," +
@@ -148,6 +148,17 @@ public class Database {
         try (Statement stmt = conn.createStatement()){
             String sql = "DELETE FROM Events";
             stmt.executeUpdate(sql);
+
+            sql = "DELETE FROM Users";
+            stmt.executeUpdate(sql);
+
+            sql = "DELETE FROM Persons";
+            stmt.executeUpdate(sql);
+
+            sql = "DELETE FROM authorizationTokens";
+            stmt.executeUpdate(sql);
+
+
         } catch (SQLException e) {
             throw new DataAccessException("SQL Error encountered while clearing tables");
         }

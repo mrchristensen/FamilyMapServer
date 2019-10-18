@@ -7,7 +7,7 @@ import java.util.Objects;
  */
 public class Person {
 
-    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender) {
+    public Person(String personID, String associatedUsername, String firstName, String lastName, String gender) {
         this.personID = personID;
         this.associatedUsername = associatedUsername;
         this.firstName = firstName;
@@ -17,7 +17,7 @@ public class Person {
         this.motherID = motherID;
     }
 
-    public Person(String personID, String associatedUsername, String firstName, String lastName, char gender, String fatherID, String motherID, String spouseID) {
+    public Person(String personID, String associatedUsername, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID) {
         this.personID = personID;
         this.associatedUsername = associatedUsername;
         this.firstName = firstName;
@@ -55,7 +55,7 @@ public class Person {
     /**
      * Person's gender (string: "f" or "m")
      */
-    char gender;
+    String gender;
 
     /**
      * Person ID of person's father (possibly null)
@@ -100,11 +100,11 @@ public class Person {
         this.lastName = lastName;
     }
 
-    public char getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(char gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
@@ -137,11 +137,11 @@ public class Person {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Person person = (Person) o;
-        return gender == person.gender &&
-                personID.equals(person.personID) &&
-                associatedUsername.equals(person.associatedUsername) &&
-                firstName.equals(person.firstName) &&
-                lastName.equals(person.lastName) &&
+        return Objects.equals(personID, person.personID) &&
+                Objects.equals(associatedUsername, person.associatedUsername) &&
+                Objects.equals(firstName, person.firstName) &&
+                Objects.equals(lastName, person.lastName) &&
+                Objects.equals(gender, person.gender) &&
                 Objects.equals(fatherID, person.fatherID) &&
                 Objects.equals(motherID, person.motherID) &&
                 Objects.equals(spouseID, person.spouseID);

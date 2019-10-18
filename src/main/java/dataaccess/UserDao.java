@@ -29,20 +29,20 @@ public class UserDao extends Dao {
         return null;
     }
 
-    /**
-     * Finds all users in the database
-     * @return Returns an array of all User objects
-     */
-    User[] getAllUsers(){
-        return null;
-    }
+//    /**
+//     * Finds all users in the database
+//     * @return Returns an array of all User objects
+//     */
+//    User[] getAllUsers(){
+//        return null;
+//    }
 
-    /**
-     * Remove a user from the database
-     * @param username The username of the user to remove from the database
-     */
-    void removeUser(String username){
-    }
+//    /**
+//     * Remove a user from the database
+//     * @param username The username of the user to remove from the database
+//     */
+//    void removeUser(String username){
+//    }
 
     /**
      * Removes all users from the database
