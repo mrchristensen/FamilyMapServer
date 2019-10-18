@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  * Describes an event in the database
  */
@@ -132,5 +134,26 @@ public class Event {
 
     public void setYear(int year) {
         this.year = year;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return Float.compare(event.latitude, latitude) == 0 &&
+                Float.compare(event.longitude, longitude) == 0 &&
+                year == event.year &&
+                eventID.equals(event.eventID) &&
+                associatedUsername.equals(event.associatedUsername) &&
+                personID.equals(event.personID) &&
+                country.equals(event.country) &&
+                city.equals(event.city) &&
+                eventType.equals(event.eventType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(eventID, associatedUsername, personID, latitude, longitude, country, city, eventType, year);
     }
 }

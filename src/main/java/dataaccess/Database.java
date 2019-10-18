@@ -16,7 +16,7 @@ public class Database {
         try {
             //The Structure for this Connection is driver:language:path
             //The path assumes you start in the root of your project unless given a non-relative path
-            final String CONNECTION_URL = "jdbc:sqlite:database/familyMap";
+            final String CONNECTION_URL = "jdbc:sqlite:database/familyMap.sqlite";
 
             // Open a database connection to the file given in the path
             conn = DriverManager.getConnection(CONNECTION_URL);
@@ -73,7 +73,7 @@ public class Database {
             //We pull out a statement from the connection we just established
             //Statements are the basis for our transactions in SQL
             //Format this string to be exactly like a sql create table command
-            String sql = "CREATE TABLE IF NOT EXISTS Events " +
+            String sqlEventTable = "CREATE TABLE IF NOT EXISTS Events " +
                     "(" +
                     "EventID text not null unique, " +
                     "AssociatedUsername text not null, " +
@@ -89,7 +89,8 @@ public class Database {
                     "foreign key (PersonID) references Persons(PersonID)" +
                     ")";
 
-            stmt.executeUpdate(sql);
+            stmt.executeUpdate(sqlEventTable);
+
             //if we got here without any problems we successfully created the table and can commit
         } catch (SQLException e) {
             //if our table creation caused an error, we can just not commit the changes that did happen
