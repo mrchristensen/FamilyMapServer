@@ -30,6 +30,9 @@ public class LoadRequest extends Request {
 
     /**
      * Full constructor to create a request to "load"
+     * @param users Array of users
+     * @param persons Array of persons
+     * @param events Array of events
      */
     public LoadRequest(User[] users, Person[] persons, Event[] events) {
         this.users = users;

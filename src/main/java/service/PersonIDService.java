@@ -1,17 +1,19 @@
 package service;
 
 import model.Person;
+import result.PersonIDResult;
 
 /**
- * Handles the functionality of retrieving of a single person
+ * Handles the functionality of retrieving of a single person - Returns the single Person object with the specified ID
  */
-public class PersonIDService {
+public class PersonIDService extends Service {
+
     /**
-     * Retrieves a person from a person ID
-     * @param personID the id of the person who wants to be retrieved
-     * @return the person of the given person ID
+     * Retrieve a single person out of the database
+     * @return Response body response for PersonID call
      */
-    Person retrievePerson(String personID){
+    PersonIDResult retrievePerson(){
         return null;
     }
+
 }

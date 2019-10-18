@@ -1,12 +1,16 @@
 package service;
 
+import result.ClearResult;
+
 /**
- * Handles the clear functionality
+ * Handles the clear functionality - Delete all data from the database (user accounts, auth tokens, persons, and events)
  */
-public class ClearService {
+public class ClearService extends Service{
     /**
-     * Clears the data base
+     * Clears the database
+     * @return Clear return response body
      */
-    void clearDatabase(){
+    ClearResult clearDatabase(){
+        return null;
     }
 }

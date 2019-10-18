@@ -1,16 +1,19 @@
 package service;
 
 import model.AuthToken;
+import request.LoginRequest;
+import result.LoginResult;
 
 /**
- * Handles the login functionality
+ * Handles the login functionality - Logs in the user and returns an auth token
  */
-public class LoginService {
+public class LoginService extends Service {
     /**
-     * Logs-in a user
-     * @param username the username of the current user
-     * @param password the password of the current user
+     * Logs-in a user - get's auth token of the user's session
+     * @param myRequest The login request info
+     * @return Response body of the login api call
      */
-    void loginUser(String username, String password){
+    LoginResult loginUser(LoginRequest myRequest){
+        return null;
     }
 }
