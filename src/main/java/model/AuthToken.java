@@ -10,10 +10,6 @@ public class AuthToken {
         this.authToken = authToken;
     }
 
-    public String getAuthToken() {
-        return authToken;
-    }
-
     /**
      * Username of the user logging in
      */
@@ -23,4 +19,20 @@ public class AuthToken {
      * Unique generated auth token for this user's session
      */
     String authToken;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
 }

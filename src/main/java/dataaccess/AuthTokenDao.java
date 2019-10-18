@@ -27,16 +27,16 @@ public class AuthTokenDao extends Dao {
      * Remove an authToken from the database
      * @param myAuthToken the authToken to remove from the database
      */
-    void removeAuthToken(AuthToken myAuthToken){
+    void removeAuthToken(String myAuthToken){
     }
 
     /**
-     *
-     * @param userName
-     * @return
+     *Get the authToken of a given user's current session
+     * @param userName The username of the user
+     * @return The authToken of a given user's current session
      */
     AuthToken getAuthToken(String userName){
-        //Todo: Handle the
+        //Todo: Handle the multiple sessions thing of a single user???
         return null;
     }
 }

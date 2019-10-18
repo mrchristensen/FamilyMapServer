@@ -23,9 +23,9 @@ public class PersonDao extends Dao {
 
     /**
      * Delete an person from the database
-     * @param eventID
+     * @param personID The ID of the person to remove
      */
-    void removePerson(String eventID){
+    void removePerson(String personID){
     }
 
     /**
@@ -48,7 +48,7 @@ public class PersonDao extends Dao {
      * @param userAuthToken The auth token of the current user
      * @return Array of all persons in the database (of all family members of user)
      */
-    Person[] getAllAncestralEvents(AuthToken userAuthToken){
+    Person[] getAllAncestralPersons(AuthToken userAuthToken){
         return null;
     }
 

@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id "com.gradle.build-scan" version "2.4.2"
 }
 
 version '1.0-SNAPSHOT'
@@ -12,4 +13,7 @@ repositories {
 
 dependencies {
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.5.1'
+    compile 'org.xerial:sqlite-jdbc:3.28.0'
 }
+
+buildScan { termsOfServiceUrl = "https://gradle.com/terms-of-service"; termsOfServiceAgree = "yes" }

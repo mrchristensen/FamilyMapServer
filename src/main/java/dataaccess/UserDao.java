@@ -1,7 +1,5 @@
 package dataaccess;
 
-import model.AuthToken;
-import model.Person;
 import model.User;
 
 /**
@@ -19,7 +17,7 @@ public class UserDao extends Dao {
      * @param gender the gender of the new current user ("f" or "s")
      */
     void insertUser(String userName, String password, String email, String firstName, String lastName, String gender){
-        //Check to see if the username is already taken and handle the delete and other stuff (watch for this case)
+        //Todo: Check to see if the username is already taken and handle the delete and other stuff (watch for this case)
     }
 
     /**

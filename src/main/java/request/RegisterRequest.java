@@ -1,7 +1,5 @@
 package request;
 
-import dataaccess.UserDao;
-
 /**
  * Pojo for the Register request body
  */
