@@ -91,6 +91,48 @@ public class Database {
 
             stmt.executeUpdate(sqlEventTable);
 
+            String sqlUserTable = "CREATE TABLE if not exists Users" +
+                    "(" +
+                    "userName TEXT NOT NULL," +
+                    "password TEXT NOT NULL," +
+                    "email TEXT NOT NULL," +
+                    "firstName TEXT NOT NULL," +
+                    "lastName TEXT NOT NULL," +
+                    "gender TEXT NOT NULL," +
+                    "personID TEXT NOT NULL," +
+                    "PRIMARY KEY(userName)" +
+                    ")";
+
+            stmt.executeUpdate(sqlUserTable);
+
+            String sqlPersonTable = "CREATE TABLE if not exists Persons" +
+                    "(" +
+                    "ID INTEGER NOT NULL," +
+                    "associatedUsername TEXT NOT NULL," +
+                    "firstName TEXT NOT NULL," +
+                    "lastName TEXT NOT NULL," +
+                    "gender TEXT NOT NULL," +
+                    "fatherID TEXT," +
+                    "motherID TEXT," +
+                    "spouseID TEXT," +
+                    "FOREIGN KEY(associatedUsername) REFERENCES Users(userName)," +
+                    "FOREIGN KEY(fatherID) REFERENCES Persons(ID)," +
+                    "FOREIGN KEY(motherID) REFERENCES Persons(ID)," +
+                    "PRIMARY KEY(ID)" +
+                    ")";
+
+            stmt.executeUpdate(sqlPersonTable);
+
+            String sqlAuthTokenTable = "CREATE TABLE if not exists authorizationTokens" +
+                    "(" +
+                    "userName	TEXT NOT NULL," +
+                    "authToken	TEXT NOT NULL," +
+                    "FOREIGN KEY(userName) REFERENCES Users(userName)," +
+                    "PRIMARY KEY(authToken)" +
+                    ")";
+
+            stmt.executeUpdate(sqlAuthTokenTable);
+
             //if we got here without any problems we successfully created the table and can commit
         } catch (SQLException e) {
             //if our table creation caused an error, we can just not commit the changes that did happen

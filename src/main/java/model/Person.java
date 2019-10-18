@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  *Person pojo: to represent people/ancestors in the database
  */
@@ -128,5 +130,25 @@ public class Person {
 
     public void setSpouseID(String spouseID) {
         this.spouseID = spouseID;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Person person = (Person) o;
+        return gender == person.gender &&
+                personID.equals(person.personID) &&
+                associatedUsername.equals(person.associatedUsername) &&
+                firstName.equals(person.firstName) &&
+                lastName.equals(person.lastName) &&
+                Objects.equals(fatherID, person.fatherID) &&
+                Objects.equals(motherID, person.motherID) &&
+                Objects.equals(spouseID, person.spouseID);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(personID, associatedUsername, firstName, lastName, gender, fatherID, motherID, spouseID);
     }
 }
