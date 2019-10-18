@@ -59,7 +59,28 @@ public class PersonDao extends Dao {
     /**
      * Deletes all persons from the database
      */
-    void removeAll(){
+    void removeAll() throws DataAccessException {
+
+
+        String sql = "DELETE FROM Persons;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding event");
+        }
+
+    }
+
+    void dropTable() throws DataAccessException {
+        String sql = "DROP TABLE Persons;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding event");
+        }
+
     }
 
     /**
