@@ -12,7 +12,6 @@ import java.nio.file.Files;
 
 
 public class FileRequestHandler implements HttpHandler {
-
     // Handles HTTP requests containing the "/ URL path
     // The "exchange" parameter is an HttpExchange object, which is
     // defined by Java.
@@ -26,12 +25,13 @@ public class FileRequestHandler implements HttpHandler {
     // (Status code, headers, response body, etc.).
     @Override
     public void handle(HttpExchange exchange) throws IOException {
+        System.out.println("\n- File Request Handler -");
         try {
             // Determine the HTTP request type (GET, POST, etc.)
             if (exchange.getRequestMethod().toUpperCase().equals("GET")) {
                 File myFile;
                 URI path = exchange.getRequestURI();
-                System.out.println("\nGET Request\nURI (path): '" + path + "'");
+                System.out.println("GET Request\nURI (path): '" + path + "'");
                 System.out.println("URI path.toString: '" + path.toString() + "'");
 
                 if(path.toString().equals("/")){
@@ -46,7 +46,7 @@ public class FileRequestHandler implements HttpHandler {
                     System.out.println("File exists\nServing: " + myFile.getPath());
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
-                    //TODO: server()
+                    //TODO: serve();
                     OutputStream respBody = exchange.getResponseBody();
                     Files.copy(myFile.toPath(), respBody);
                     writeString(myFile.toString(), respBody);

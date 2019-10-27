@@ -17,6 +17,6 @@ public class LoadRequestHandler implements HttpHandler {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        
+        System.out.println("\n- Load Request Handler -");
     }
 }

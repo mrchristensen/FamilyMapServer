@@ -80,7 +80,7 @@ public class Database {
                     "Year int not null, " +
                     "primary key (EventID), " +
                     "foreign key (AssociatedUsername) references Users(Username), " +
-                    "foreign key (PersonID) references Persons(PersonID)" +
+                    "foreign key (PersonID) references Persons(ID)" +
                     ")";
 
             stmt.executeUpdate(sqlEventTable);
@@ -133,7 +133,7 @@ public class Database {
 
     }
 
-    public void clearTables() throws DataAccessException
+    public int clearTables() throws DataAccessException
     {
 
         try (Statement stmt = conn.createStatement()){
@@ -149,9 +149,11 @@ public class Database {
             sql = "DELETE FROM authorizationTokens";
             stmt.executeUpdate(sql);
 
+            return 0;
 
         } catch (SQLException e) {
-            throw new DataAccessException("SQL Error encountered while clearing tables");
+            return 1;
+//            throw new DataAccessException("SQL Error encountered while clearing tables");
         }
     }
 }
