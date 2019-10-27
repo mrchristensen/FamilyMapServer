@@ -129,7 +129,7 @@ public class UserDaoTest {
             //only that it ran without causing an error
             eDao.insert(bestUser);
             //So lets use a find method to get the event that we just put in back out
-            compa reTest = eDao.get(bestUser.getUserName());
+            compareTest = eDao.get(bestUser.getUserName());
             db.closeConnection(true);
         } catch (DataAccessException e) {
             db.closeConnection(false);
