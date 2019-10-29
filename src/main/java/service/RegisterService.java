@@ -46,7 +46,15 @@ public class RegisterService extends Service {
         RegisterResult result = new RegisterResult();
 
         //Logs in the user
-        AuthToken authToken = login(myRequest);
+        AuthToken authToken = null;
+        try {
+            authToken = login(myRequest);
+        } catch (SQLException e) {
+            System.out.println("Error on logging in the new user");
+            e.printStackTrace();
+            result.setMessage("Internal server error - Login failed");
+            return result;
+        }
         //Todo: check for an error and return an error message (with a catch block)
 
         result.setAuthToken(authToken);
@@ -83,7 +91,7 @@ public class RegisterService extends Service {
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
-    AuthToken login(RegisterRequest myRequest){
+    AuthToken login(RegisterRequest myRequest) throws SQLException {
         LoginRequest loginRequest = new LoginRequest();
 
         loginRequest.setUsername(myRequest.getUsername());

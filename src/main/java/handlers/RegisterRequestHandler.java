@@ -24,7 +24,7 @@ public class RegisterRequestHandler implements HttpHandler {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        System.out.println("\n- Register Request Handler -");
+        System.out.println("\n\t- Register Request Handler -");
 
         // Determine the HTTP request type (GET, POST, etc.)
         System.out.println("Check so see if the request method is post");
@@ -40,27 +40,20 @@ public class RegisterRequestHandler implements HttpHandler {
                 e.printStackTrace();
             }
 
-            if (registerResult.getMessage().equals("Clear succeeded.")) {
-                System.out.println("Clear was successful.\nClearResult message: " + registerResult.getMessage());
+            if (registerResult.getMessage() == null) { //If the error message is null
+                System.out.println("Register was a success." +
+                        "\nauthToken: " + registerResult.getAuthToken() +
+                        "\nuserName: " + registerResult.getUserName() +
+                        "\npersonID: " + registerResult.getPersonID());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
                 exchange.close();
             } else { //Error
-                System.out.println("Error during clear: " + registerResult.getMessage());
+                System.out.println("Error during register: " + registerResult.getMessage());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
                 exchange.close();
             }
         }
-    }
-    }
 
-    /**
-    *The writeString method writes a String to an OutputStream.
-    */
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        BufferedWriter bw = new BufferedWriter(sw);
-        bw.write(str);
-        bw.flush();
     }
 
 }

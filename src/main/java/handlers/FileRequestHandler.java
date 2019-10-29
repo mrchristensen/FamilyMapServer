@@ -25,7 +25,7 @@ public class FileRequestHandler implements HttpHandler {
     // (Status code, headers, response body, etc.).
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        System.out.println("\n- File Request Handler -");
+        System.out.println("\n\t- File Request Handler -");
         try {
             // Determine the HTTP request type (GET, POST, etc.)
             if (exchange.getRequestMethod().toUpperCase().equals("GET")) {

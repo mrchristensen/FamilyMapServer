@@ -33,7 +33,7 @@ public class AuthTokenDao extends Dao {
      * Insert an authToken into the database
      * @param myAuthToken The authToken to insert into the database
      */
-    void insert(AuthToken myAuthToken) throws SQLException {
+    public void insert(AuthToken myAuthToken) throws SQLException {
         String sql = "INSERT INTO authorizationTokens (userName, authToken) VALUES(?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, myAuthToken.getUserName());
