@@ -13,7 +13,7 @@ public class LoginService extends Service {
      * @param myRequest The login request info
      * @return Response body of the login api call
      */
-    LoginResult loginUser(LoginRequest myRequest){
+    public LoginResult loginUser(LoginRequest myRequest){
         return null;
     }
 }

@@ -24,7 +24,7 @@ public class UserDao extends Dao {
     /**
      * Adds a user to the database
      */
-    void insert(User myUser) throws DataAccessException {
+    public void insert(User myUser) throws DataAccessException {
         //Todo: Check to see if the username is already taken and handle the delete and other stuff (watch for this case)
         //We can structure our string to be similar to a sql command, but if we insert question
         //marks we can change them later with help from the statement

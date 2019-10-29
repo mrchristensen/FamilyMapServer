@@ -166,10 +166,11 @@ public class Generation {
 
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(json);
-        JsonArray jsonUserArray = (JsonArray) jsonObject.get("data");
+        JsonArray jsonArray = (JsonArray) jsonObject.get("data");
         List<String> myList = new ArrayList<>();
-        for (JsonElement element : jsonUserArray) {
-            System.out.println("TEST: " + element);
+        System.out.println("\n\tAdding elements from " + myFile.getName());
+        for (JsonElement element : jsonArray) {
+            System.out.println("Added: " + element);
             myList.add(element.toString());
         }
 

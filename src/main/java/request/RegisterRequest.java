@@ -33,7 +33,7 @@ public class RegisterRequest extends Request {
     /**
      * User's gender (string: "f" or "m")
      */
-    char gender;
+    String gender;
 
     /**
      * Default Constructor
@@ -50,7 +50,7 @@ public class RegisterRequest extends Request {
      * @param lastName the last name of the current user
      * @param gender the gender of the current user
      */
-    public RegisterRequest(String username, String password, String email, String firstName, String lastName, char gender) {
+    public RegisterRequest(String username, String password, String email, String firstName, String lastName, String gender) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -105,11 +105,11 @@ public class RegisterRequest extends Request {
         this.lastName = lastName;
     }
 
-    public char getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(char gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 }
