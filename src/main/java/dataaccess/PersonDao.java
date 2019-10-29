@@ -24,7 +24,7 @@ public class PersonDao extends Dao {
     /**
      * Adds a new person to the database
      */
-    void insert(Person myPerson) throws DataAccessException {
+    public void insert(Person myPerson) throws DataAccessException {
         //We can structure our string to be similar to a sql command, but if we insert question
         //marks we can change them later with help from the statement
         String sql = "INSERT INTO Persons (ID, associatedUsername, firstName, lastName, gender, " +
@@ -88,7 +88,7 @@ public class PersonDao extends Dao {
      * @param personID The ID of the desired person
      * @return The person object of the desired person
      */
-    Person get(String personID) throws DataAccessException {
+    public Person get(String personID) throws DataAccessException {
         Person person;
         ResultSet rs = null;
         String sql = "SELECT * FROM Persons WHERE ID = ?;";

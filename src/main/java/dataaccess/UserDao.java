@@ -54,7 +54,7 @@ public class UserDao extends Dao {
      * @param userName The username of the desired user
      * @return User object with that username
      */
-    User get(String userName) throws DataAccessException {
+    public User get(String userName) throws DataAccessException {
         User user;
         ResultSet rs = null;
         String sql = "SELECT * FROM Users WHERE userName = ?;";

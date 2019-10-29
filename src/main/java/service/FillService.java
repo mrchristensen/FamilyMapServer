@@ -1,7 +1,16 @@
 package service;
 
+import dataaccess.Database;
+import dataaccess.PersonDao;
+import dataaccess.UserDao;
+import exceptions.DataAccessException;
+import generation.Generation;
 import model.*;
 import result.FillResult;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Handles the fill functionality
@@ -19,7 +28,34 @@ public class FillService extends Service{
      * @param numGenerations the number of generations to generate
      * @return Response body of fill
      */
-    FillResult fillGenerations(String userName, int numGenerations){
-        return null;
+    FillResult fillGenerations(String userName, int numGenerations) throws SQLException {
+        FillResult myResult = new FillResult();
+
+        Database db = new Database();
+        Connection conn = db.openConnection();
+        UserDao userDao = new UserDao(conn);
+
+        //Todo: make sure that numGenerations is valid
+        try {
+            User baseUser = userDao.get(userName);
+            if(baseUser != null){
+                PersonDao personDao = new PersonDao(conn);
+                Person baseChild = personDao.get(baseUser.getPersonID());
+                Generation generation = new Generation();
+                generation.genGenerations(baseChild, numGenerations);
+
+                //TODO: count the num of events (local var of Generation?)
+                int X = 0;
+                int Y = 0;
+                myResult.setMessage("Successfully added " + X + " persons and " + Y + " events to the database.");
+            }
+        } catch (DataAccessException e) {
+            myResult.setMessage("Invalid username");
+        } catch (IOException e){
+            myResult.setMessage("Invalid numGenerations");
+        }
+
+        db.closeConnection(true);
+        return  myResult;
     }
 }

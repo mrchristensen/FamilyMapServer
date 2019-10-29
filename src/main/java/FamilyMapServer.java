@@ -1,5 +1,6 @@
 import com.sun.net.httpserver.HttpServer;
 import dataaccess.Database;
+import generation.Generation;
 import handlers.*;
 
 import java.io.IOException;
@@ -10,11 +11,12 @@ public class FamilyMapServer {
 
     public static void main(String[] args){
         try{
+            int port = Integer.parseInt(args[0]);
             Database db = new Database();
             db.openConnection();
-            db.createTables();
+            db.createTables(); //Ensure that the tables are created
             db.closeConnection(true);
-            startServer(8000);
+            startServer(port);
         } catch (IOException | SQLException e) {
             e.printStackTrace();
         }

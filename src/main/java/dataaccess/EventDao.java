@@ -24,7 +24,7 @@ public class EventDao extends Dao {
      * Add a event into the database
      * @param myEvent The event to insert into the database
      */
-    void insert(Event myEvent) throws DataAccessException {
+    public void insert(Event myEvent) throws DataAccessException {
         //We can structure our string to be similar to a sql command, but if we insert question
         //marks we can change them later with help from the statement
         String sql = "INSERT INTO Events (EventID, AssociatedUsername, PersonID, Latitude, Longitude, " +
@@ -74,6 +74,37 @@ public class EventDao extends Dao {
         String sql = "SELECT * FROM Events WHERE EventID = ?;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, eventID);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                event = new Event(rs.getString("EventID"), rs.getString("AssociatedUsername"),
+                        rs.getString("PersonID"), rs.getFloat("Latitude"), rs.getFloat("Longitude"),
+                        rs.getString("Country"), rs.getString("City"), rs.getString("EventType"),
+                        rs.getInt("Year"));
+                return event;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding event");
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        return null;
+    }
+
+    public Event get(String associatedUser, String eventType) throws DataAccessException {
+        Event event;
+        ResultSet rs = null;
+        String sql = "SELECT * FROM Events WHERE AssociatedUsername = ? AND EventType = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, associatedUser);
+            stmt.setString(2, eventType);
             rs = stmt.executeQuery();
             if (rs.next()) {
                 event = new Event(rs.getString("EventID"), rs.getString("AssociatedUsername"),

@@ -34,11 +34,9 @@ public class ClearRequestHandler implements HttpHandler {
         if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
             System.out.println("Request method is post");
 
-            Database myDB = new Database();
-            ClearService clearService = new ClearService();
             ClearResult clearResult = null;
             try {
-                clearResult = clearService.clearDatabase();
+                clearResult = new ClearService().clearDatabase();
             } catch (DataAccessException | SQLException e) {
                 e.printStackTrace();
             }
