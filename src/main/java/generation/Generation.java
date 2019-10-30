@@ -37,8 +37,8 @@ public class Generation {
         Person mom = genPerson(child.getAssociatedUsername(), "f");
         mom.setSpouseID(dad.getPersonID());
         dad.setSpouseID(mom.getPersonID());
-        child.setMotherID(mom.getMotherID());
-        child.setFatherID(dad.getFatherID());
+        child.setMotherID(mom.getPersonID());
+        child.setFatherID(dad.getPersonID());
 
         int dateOfBirthMom = genBirthYear(child); //More than 13 before child's date of birth
         int dateOfBirthDad = genBirthYear(child);

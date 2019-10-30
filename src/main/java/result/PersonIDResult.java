@@ -1,5 +1,7 @@
 package result;
 
+import model.Person;
+
 /**
  * Response body for the person/personID API call
  */
@@ -27,7 +29,7 @@ public class PersonIDResult extends Result {
     /**
      * Person's gender
      */
-    char gender;
+    String gender;
 
     /**
      * ID of the person's father (optional)
@@ -61,7 +63,7 @@ public class PersonIDResult extends Result {
      * @param motherID The ID of the mother of the person
      * @param spouseID The ID of the spouse of the person
      */
-    public PersonIDResult(String associatedUsername, String personID, String firstName, String lastName, char gender, String fatherID, String motherID, String spouseID) {
+    public PersonIDResult(String associatedUsername, String personID, String firstName, String lastName, String gender, String fatherID, String motherID, String spouseID) {
         this.associatedUsername = associatedUsername;
         this.personID = personID;
         this.firstName = firstName;
@@ -70,6 +72,17 @@ public class PersonIDResult extends Result {
         this.fatherID = fatherID;
         this.motherID = motherID;
         this.spouseID = spouseID;
+    }
+
+    public PersonIDResult(Person person) {
+        associatedUsername = person.getAssociatedUsername();
+        personID = person.getPersonID();
+        firstName = person.getFirstName();
+        lastName = person.getLastName();
+        gender = person.getGender();
+        fatherID = person.getFatherID();
+        motherID = person.getMotherID();
+        spouseID = person.getSpouseID();
     }
 
     public String getAssociatedUsername() {
@@ -104,11 +117,11 @@ public class PersonIDResult extends Result {
         this.lastName = lastName;
     }
 
-    public char getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(char gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 
