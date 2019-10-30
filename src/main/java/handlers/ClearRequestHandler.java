@@ -1,5 +1,6 @@
 package handlers;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import dataaccess.Database;
@@ -44,10 +45,22 @@ public class ClearRequestHandler implements HttpHandler {
             if (clearResult.getMessage().equals("Clear succeeded.")) {
                 System.out.println("Clear was successful.\nClearResult message: " + clearResult.getMessage());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
+                //Write the response from the server
+                OutputStream respBody = exchange.getResponseBody();
+                String json = JsonDeserialization.serialize(clearResult);
+                respBody.write(json.getBytes());
+
                 exchange.close();
             } else { //Error
                 System.out.println("Error during clear: " + clearResult.getMessage());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
+
+                //Write the response from the server
+                OutputStream respBody = exchange.getResponseBody();
+                String json = JsonDeserialization.serialize(clearResult);
+                respBody.write(json.getBytes());
+
                 exchange.close();
             }
         }

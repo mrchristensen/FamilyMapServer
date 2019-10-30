@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.Database;
+import dataaccess.EventDao;
 import dataaccess.UserDao;
 import exceptions.DataAccessException;
 import generation.Generation;
@@ -26,9 +27,8 @@ public class RegisterService extends Service {
      * @return RegisterService
      */
     public RegisterResult registerUser(RegisterRequest myRequest) throws SQLException, IOException, DataAccessException {
+        RegisterResult result = new RegisterResult();
         Person usersPerson = createUserPerson(myRequest);
-
-        new Generation().genGenerations(usersPerson, 4); //Generate data for the new user (also add user's person to the data base)
 
         //Adds user to the user database table
         Database db = new Database();
@@ -38,12 +38,18 @@ public class RegisterService extends Service {
         try {
             userDao.insert(user);
         } catch (DataAccessException e) {
-            e.printStackTrace();
             db.closeConnection(false);
+            System.out.println("That username is already taken");
+            result.setMessage("Username already taken by another user");
+            return result;
         }
         db.closeConnection(true);
 
-        RegisterResult result = new RegisterResult();
+        //Create and insert a "Birth" event for the user (to help for generation)
+        createBirthEvent(usersPerson);
+
+        //Generate data for the new user (also add user's person to the data base)
+        new Generation().genGenerations(usersPerson, 4);
 
         //Logs in the user
         AuthToken authToken = null;
@@ -89,6 +95,23 @@ public class RegisterService extends Service {
         String gender = myRequest.getGender();
 
         return new Person(personID, associatedUsername, firstName, lastName, gender);
+    }
+
+    void createBirthEvent(Person person) throws SQLException {
+        Event myEvent = new Generation().genEvent(person, "Birth", 1997);
+
+        Database db = new Database();
+        Connection conn = db.openConnection();
+        EventDao eventDao = new EventDao(conn);
+
+        try {
+            eventDao.insert(myEvent);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            db.closeConnection(false);
+        }
+
+        db.closeConnection(true);
     }
 
     AuthToken login(RegisterRequest myRequest) throws SQLException {

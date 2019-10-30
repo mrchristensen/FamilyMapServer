@@ -1,5 +1,6 @@
 package handlers;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import exceptions.DataAccessException;
@@ -31,7 +32,16 @@ public class RegisterRequestHandler implements HttpHandler {
         if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
             System.out.println("Request method is post");
 
-            String jsonString = exchange.getRequestBody().toString();
+            InputStream inputStream = exchange.getRequestBody();
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            // StandardCharsets.UTF_8.name() > JDK 7
+            String jsonString =  result.toString("UTF-8");
+
             RegisterRequest request = JsonDeserialization.deserialize(jsonString, RegisterRequest.class);
             RegisterResult registerResult = null;
             try {
@@ -46,10 +56,22 @@ public class RegisterRequestHandler implements HttpHandler {
                         "\nuserName: " + registerResult.getUserName() +
                         "\npersonID: " + registerResult.getPersonID());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
+                //Write the response from the server
+                OutputStream respBody = exchange.getResponseBody();
+                String json = JsonDeserialization.serialize(registerResult);
+                respBody.write(json.getBytes());
+
                 exchange.close();
             } else { //Error
                 System.out.println("Error during register: " + registerResult.getMessage());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
+
+                //Write the response from the server
+                OutputStream respBody = exchange.getResponseBody();
+                String json = JsonDeserialization.serialize(registerResult);
+                respBody.write(json.getBytes());
+
                 exchange.close();
             }
         }

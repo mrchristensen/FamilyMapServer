@@ -98,12 +98,15 @@ public class EventDao extends Dao {
         return null;
     }
 
-    public Event get(String associatedUser, String eventType) throws DataAccessException {
-        Event event;
+    public Event get(String personID, String eventType) throws DataAccessException {
+        System.out.println("Get event with a userName and eventType");
+        Event event = null;
         ResultSet rs = null;
-        String sql = "SELECT * FROM Events WHERE AssociatedUsername = ? AND EventType = ?;";
+
+        String sql = "SELECT * FROM Events WHERE PersonID = ? AND EventType = ?;";
+//        String sql = "SELECT * FROM Events WHERE AssociatedUsername = " + associatedUser + " AND EventType = " + eventType + ";";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, associatedUser);
+            stmt.setString(1, personID);
             stmt.setString(2, eventType);
             rs = stmt.executeQuery();
             if (rs.next()) {
@@ -111,9 +114,11 @@ public class EventDao extends Dao {
                         rs.getString("PersonID"), rs.getFloat("Latitude"), rs.getFloat("Longitude"),
                         rs.getString("Country"), rs.getString("City"), rs.getString("EventType"),
                         rs.getInt("Year"));
+                System.out.println("Found the correct event (of type): " + event.getEventType());
                 return event;
             }
         } catch (SQLException e) {
+            System.out.println("Error encountered while finding event");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding event");
         } finally {
@@ -121,6 +126,7 @@ public class EventDao extends Dao {
                 try {
                     rs.close();
                 } catch (SQLException e) {
+                    System.out.println("Error!");
                     e.printStackTrace();
                 }
             }

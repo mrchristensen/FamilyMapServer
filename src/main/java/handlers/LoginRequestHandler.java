@@ -7,10 +7,7 @@ import request.*;
 import result.*;
 import service.*;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.sql.SQLException;
 
@@ -34,7 +31,16 @@ public class LoginRequestHandler implements HttpHandler {
         if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
             System.out.println("Request method is post");
 
-            String jsonString = exchange.getRequestBody().toString();
+            InputStream inputStream = exchange.getRequestBody();
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            // StandardCharsets.UTF_8.name() > JDK 7
+            String jsonString =  result.toString("UTF-8");
+
             LoginRequest request = JsonDeserialization.deserialize(jsonString, LoginRequest.class);
             LoginResult loginResult = null;
             try {
@@ -49,10 +55,22 @@ public class LoginRequestHandler implements HttpHandler {
                         "\nuserName: " + loginResult.getUserName() +
                         "\npersonID: " + loginResult.getPersonID());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+
+                //Write the response from the server
+                OutputStream respBody = exchange.getResponseBody();
+                String json = JsonDeserialization.serialize(loginResult);
+                respBody.write(json.getBytes());
+
                 exchange.close();
             } else { //Error
                 System.out.println("Error during login: " + loginResult.getMessage());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
+
+                //Write the response from the server
+                OutputStream respBody = exchange.getResponseBody();
+                String json = JsonDeserialization.serialize(loginResult);
+                respBody.write(json.getBytes());
+
                 exchange.close();
             }
         }

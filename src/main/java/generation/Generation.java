@@ -5,8 +5,6 @@ import dataaccess.Database;
 import dataaccess.EventDao;
 import dataaccess.PersonDao;
 import exceptions.DataAccessException;
-import jdk.nashorn.internal.ir.ObjectNode;
-import jdk.nashorn.internal.parser.JSONParser;
 import model.Event;
 import model.Person;
 import org.json.JSONArray;
@@ -33,6 +31,7 @@ public class Generation {
     }
 
     public void genGenerations(Person child, int numGenerations) throws IOException, SQLException, DataAccessException {
+        System.out.println("Generations left: " + numGenerations + "\nChild: " + child.getFirstName());
 
         Person dad = genPerson(child.getAssociatedUsername(), "m");
         Person mom = genPerson(child.getAssociatedUsername(), "f");
@@ -41,29 +40,16 @@ public class Generation {
         child.setMotherID(mom.getMotherID());
         child.setFatherID(dad.getFatherID());
 
-        if(numGenerations > 0){
-            genGenerations(mom, numGenerations - 1);
-            genGenerations(dad, numGenerations - 1);
-        }
-
         int dateOfBirthMom = genBirthYear(child); //More than 13 before child's date of birth
         int dateOfBirthDad = genBirthYear(child);
         int dateOfMarriage = genMarriageYear(dateOfBirthMom, dateOfBirthDad); //At least 19 years after either's birthday
         int dateOfDeathMom = genDeathYear(dateOfBirthMom); //After the birth of child, not more than 120 years after death
         int dateOfDeathDad = genDeathYear(dateOfBirthDad);
 
-
         Database db = new Database();
         Connection conn = db.openConnection();
 
-        PersonDao personDao = new PersonDao(conn);
-        if(personDao.get(child.getPersonID()) == null){
-            personDao.insert(child);
-        }
-        if(numGenerations == 0) {
-            personDao.insert(mom);
-            personDao.insert(dad);
-        }
+        conn = db.openConnection();
 
         EventDao eventDao = new EventDao(conn);
         eventDao.insert(genEvent(mom, "Birth", dateOfBirthMom));
@@ -75,17 +61,49 @@ public class Generation {
 
         db.closeConnection(true);
 
-    }
+        if(numGenerations > 0){
+            genGenerations(mom, numGenerations - 1);
+            genGenerations(dad, numGenerations - 1);
+        }
 
-    int genBirthYear(Person child) throws SQLException, DataAccessException {
-        Database db = new Database();
-        Connection conn = db.openConnection();
-        EventDao eventDao = new EventDao(conn);
-        int childBirthyear = eventDao.get(child.getAssociatedUsername(), "Birth").getYear();
+        conn = db.openConnection();
+
+        PersonDao personDao = new PersonDao(conn);
+        if(personDao.get(child.getPersonID()) == null){
+            personDao.insert(child);
+        }
+        if(numGenerations == 0) {
+            personDao.insert(mom);
+            personDao.insert(dad);
+        }
+
         db.closeConnection(true);
 
+    }
+
+    int genBirthYear(Person child) {
+        Database db = new Database();
+        Connection conn = null;
+        try {
+            conn = db.openConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        EventDao eventDao = new EventDao(conn);
+        int childBirthyear = 0;
+        try {
+            childBirthyear = eventDao.get(child.getPersonID(), "Birth").getYear();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        try {
+            db.closeConnection(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         Random r = new Random();
-        int low = childBirthyear - 45;
+        int low = childBirthyear - 50;
         int high = childBirthyear - 20;
         int newBirthyear =  r.nextInt(high-low) + low;
         System.out.println("New birthyear for parent is : " + newBirthyear + " (Child was born: " + childBirthyear + ")");
@@ -94,8 +112,8 @@ public class Generation {
 
     int genDeathYear(int birthYear) throws SQLException, DataAccessException {
         Random r = new Random();
-        int low = birthYear + 75;
-        int high = birthYear + 95;
+        int low = birthYear + 70;
+        int high = birthYear + 96;
         int deathYear =  r.nextInt(high-low) + low;
         System.out.println("Died on year: " + deathYear + " (Died at age " + (deathYear-birthYear) + ")");
         return deathYear;
@@ -144,7 +162,7 @@ public class Generation {
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
-    Event genEvent(Person person, String type, int year){
+    public Event genEvent(Person person, String type, int year){
         String eventID = UUID.randomUUID().toString();
         String associatedUsername = person.getAssociatedUsername();
         String personID = person.getPersonID();

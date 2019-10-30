@@ -8,7 +8,7 @@ public class RegisterRequest extends Request {
     /**
      * Unique user name (non-empty string)
      */
-    String username;
+    String userName;
 
     /**
      * User's password (non-empty string)
@@ -51,7 +51,7 @@ public class RegisterRequest extends Request {
      * @param gender the gender of the current user
      */
     public RegisterRequest(String username, String password, String email, String firstName, String lastName, String gender) {
-        this.username = username;
+        this.userName = username;
         this.password = password;
         this.email = email;
         this.firstName = firstName;
@@ -66,11 +66,11 @@ public class RegisterRequest extends Request {
     public String generateResponseBody() { return null;}
 
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.userName = username;
     }
 
     public String getPassword() {

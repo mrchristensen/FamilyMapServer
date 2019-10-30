@@ -102,8 +102,9 @@ public class PersonDao extends Dao {
                 return person;
             }
         } catch (SQLException e) {
+            System.out.println("Error encountered while finding person.\n");
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding event");
+            throw new DataAccessException("Error encountered while finding person.\n");
         } finally {
             if(rs != null) {
                 try {
