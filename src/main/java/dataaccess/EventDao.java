@@ -70,7 +70,7 @@ public class EventDao extends Dao {
      * @param eventID The ID of the desired event
      * @return The event object of the desired event
      */
-    Event get(String eventID) throws DataAccessException {
+    public Event get(String eventID) throws DataAccessException {
         Event event;
         ResultSet rs = null;
         String sql = "SELECT * FROM Events WHERE EventID = ?;";

@@ -33,32 +33,40 @@ public class EventRequestHandler implements HttpHandler {
         System.out.println("Check so see if the request method is get");
         if (exchange.getRequestMethod().toUpperCase().equals("GET")) {
             System.out.println("Request method is get");
-
-            Result result = null;
-//TODO: Check the authtoken
-            //See if we're looking for a single event or all that belong to a user
+            Result result = new Result();
             String[] args = exchange.getRequestURI().toString().split("(?!^)/");
+            String authKey = exchange.getRequestHeaders().getFirst("Authorization"); //Todo
+
+            //Database and setup
+            Database db = new Database();
+            Connection conn = null;
+            try {
+                conn = db.openConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            AuthTokenDao authTokenDao = new AuthTokenDao(conn);
+            String associatedUsername = null;
+            try {
+                associatedUsername = authTokenDao.getAuthUsername(authKey);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            //Validate auth token
+            if(associatedUsername == null){
+                System.out.println("Invalid auth token in Event Request");
+                result.setMessage("Invalid auth token");
+                writeOutput(exchange, result);
+                return;
+            }
+
+            //See if we're looking for a single event or all that belong to a user
             if (args.length > 1) {
                 System.out.println("Get a single event (with id of): " + args[1]);
-                result = new EventIDService().retrieveEvent(args[1]);
+                result = new EventIDService().retrieveEvent(args[1], associatedUsername);
             } else {
                 System.out.println("Get all events of the current user (from auth token)");
-                String authKey = exchange.getRequestHeaders().getFirst("Authorization"); //Todo
-
-                Database db = new Database();
-                Connection conn = null;
-                try {
-                    conn = db.openConnection();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                AuthTokenDao authTokenDao = new AuthTokenDao(conn);
-                String associatedUsername = null;
-                try {
-                    associatedUsername = authTokenDao.getAuthUsername(authKey);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
                 try {
                     result = new EventService().retrieveAllEvents(associatedUsername);
                 } catch (SQLException e) {
@@ -67,36 +75,17 @@ public class EventRequestHandler implements HttpHandler {
             }
 
             //Write the response from the server
-            System.out.println("Finished finding all events for the current user");
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            OutputStream respBody = exchange.getResponseBody();
-            String json = JsonDeserialization.serialize(result);
-            respBody.write(json.getBytes());
-
-            exchange.close();
-
-
-//            if (clearResult.getMessage().equals("Clear succeeded.")) {
-//                System.out.println("Clear was successful.\nClearResult message: " + clearResult.getMessage());
-//                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-//
-//                //Write the response from the server
-//                OutputStream respBody = exchange.getResponseBody();
-//                String json = JsonDeserialization.serialize(clearResult);
-//                respBody.write(json.getBytes());
-//
-//                exchange.close();
-//            } else { //Error
-//                System.out.println("Error during clear: " + clearResult.getMessage());
-//                exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
-//
-//                //Write the response from the server
-//                OutputStream respBody = exchange.getResponseBody();
-//                String json = JsonDeserialization.serialize(clearResult);
-//                respBody.write(json.getBytes());
-//
-//                exchange.close();
-//            }
+            System.out.println("Finished finding event(s)");
+            writeOutput(exchange, result);
         }
+    }
+
+    void writeOutput(HttpExchange exchange, Result result) throws IOException {
+        exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+        OutputStream respBody = exchange.getResponseBody();
+        String json = JsonDeserialization.serialize(result);
+        respBody.write(json.getBytes());
+
+        exchange.close();
     }
 }
