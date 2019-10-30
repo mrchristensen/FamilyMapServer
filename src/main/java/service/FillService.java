@@ -47,15 +47,17 @@ public class FillService extends Service{
                 Person baseChild = personDao.get(baseUser.getPersonID());
                 personDao.removeUsersRelatives(userName, baseChild.getPersonID());
                 eventDao.removeUsersRelativesEvents(userName, baseChild.getPersonID());
-
                 db.closeConnection(true);
+
+                //Generate ancestral data
                 Generation generation = new Generation();
                 generation.genGenerations(baseChild, numGenerations);
 
-                //TODO: count the num of events (local var of Generation?)
-                int X = 0;
-                int Y = 0;
-                myResult.setMessage("Successfully added " + X + " persons and " + Y + " events to the database.");
+                //Set response
+                int numPersonsAdded = generation.getPersonsAdded();
+                int numEventsAdded = generation.getEventsAdded();
+                myResult.setMessage("Successfully added " + numPersonsAdded + " persons and " +
+                        numEventsAdded + " events to the database.");
             }
             else{
                 myResult.setMessage("Invalid username");

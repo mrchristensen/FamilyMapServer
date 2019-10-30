@@ -24,11 +24,15 @@ public class Generation {
     List<String> femaleNames;
     List<String> maleNames;
     List<String> surNames;
+    int personsAdded;
+    int eventsAdded;
 
     public Generation() {
         femaleNames = jsonToString(new File("json/fnames.json"));
         maleNames = jsonToString(new File("json/mnames.json"));
         surNames  = jsonToString(new File("json/snames.json"));
+        personsAdded = 0;
+        eventsAdded = 0;
     }
 
     public void genGenerations(Person child, int numGenerations) throws IOException, SQLException, DataAccessException {
@@ -57,8 +61,8 @@ public class Generation {
         eventDao.insert(genEvent(dad, "Marriage", dateOfMarriage));
         eventDao.insert(genEvent(mom, "Death", dateOfDeathMom));
         eventDao.insert(genEvent(dad, "Death", dateOfDeathDad));
-
         db.closeConnection(true);
+        eventsAdded += 6;
 
         if(numGenerations > 0){
             genGenerations(mom, numGenerations - 1);
@@ -70,10 +74,12 @@ public class Generation {
         PersonDao personDao = new PersonDao(conn);
         if(personDao.get(child.getPersonID()) == null){
             personDao.insert(child);
+            personsAdded += 1;
         }
         if(numGenerations == 0) {
             personDao.insert(mom);
             personDao.insert(dad);
+            personsAdded += 2;
         }
 
         db.closeConnection(true);
@@ -193,6 +199,13 @@ public class Generation {
         }
 
         return myList;
+    }
 
+    public int getPersonsAdded() {
+        return personsAdded;
+    }
+
+    public int getEventsAdded() {
+        return eventsAdded;
     }
 }
