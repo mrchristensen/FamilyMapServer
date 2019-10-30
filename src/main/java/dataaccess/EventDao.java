@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles all database operations for events
@@ -96,6 +98,43 @@ public class EventDao extends Dao {
 
         }
         return null;
+    }
+
+    public Event[] getAll(String associatedUserName) throws DataAccessException {
+        System.out.println("Get event with a userName and eventType");
+        List<Event> events = new ArrayList<>();
+        Event event = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM Events WHERE AssociatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, associatedUserName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                event = new Event(rs.getString("EventID"), rs.getString("AssociatedUsername"),
+                        rs.getString("PersonID"), rs.getFloat("Latitude"), rs.getFloat("Longitude"),
+                        rs.getString("Country"), rs.getString("City"), rs.getString("EventType"),
+                        rs.getInt("Year"));
+                System.out.println("Found an event that is associated with the user: " + event.getEventType());
+                events.add(event);
+            }
+            return events.toArray(new Event[0]);
+        } catch (SQLException e) {
+            System.out.println("Error encountered while finding event");
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding event");
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    System.out.println("Error!");
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
     }
 
     public Event get(String personID, String eventType) throws DataAccessException {

@@ -14,7 +14,7 @@ public class EventIDService extends Service{
      * @param eventID the id of the event to be retrieved
      * @return the response body for an eventID call
      */
-    EventIDResult retrieveEvent(String eventID){
+    public EventIDResult retrieveEvent(String eventID){
         return null;
     }
 

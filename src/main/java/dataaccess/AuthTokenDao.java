@@ -65,7 +65,7 @@ public class AuthTokenDao extends Dao {
      * @param userName The username of the user
      * @return The authToken of a given user's current session
      */
-    AuthToken get(String userName) throws SQLException {
+    AuthToken getAuthToken(String userName) throws SQLException {
         //Todo: Handle the multiple sessions thing of a single user???
         AuthToken authToken;
         ResultSet rs = null;
@@ -76,6 +76,30 @@ public class AuthTokenDao extends Dao {
             if (rs.next()) {
                 authToken = new AuthToken(rs.getString("userName"), rs.getString("authToken"));
                 return authToken;
+            }
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        return null;
+    }
+
+    public String getAuthUsername(String authToken) throws SQLException {
+        //Todo: Handle the multiple sessions thing of a single user???
+        ResultSet rs = null;
+        String sql = "SELECT * FROM AuthorizationTokens WHERE authToken = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, authToken);
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                AuthToken token = new AuthToken(rs.getString("userName"), rs.getString("authToken"));
+                return rs.getString("userName");
             }
         } finally {
             if(rs != null) {
