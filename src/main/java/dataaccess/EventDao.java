@@ -174,14 +174,18 @@ public class EventDao extends Dao {
         return null;
     }
 
+    public void removeUsersRelativesEvents(String username, String personID) throws DataAccessException {
 
-    /**
-     * Retrieves all events of all family of the current user (from the database)
-     * @param userAuthToken The auth token of the current user
-     * @return Array of all events in the database (of all family members of user)
-     */
-    Event[] getAllAncestralEvents(AuthToken userAuthToken){
-        return null;
+        String sql = "DELETE FROM Events WHERE associatedUsername = ? AND PersonID != ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, personID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding person");
+        }
+
     }
 
 }

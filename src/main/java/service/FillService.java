@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.Database;
+import dataaccess.EventDao;
 import dataaccess.PersonDao;
 import dataaccess.UserDao;
 import exceptions.DataAccessException;
@@ -39,8 +40,14 @@ public class FillService extends Service{
         try {
             User baseUser = userDao.get(userName);
             if(baseUser != null){
+
+                //Remove all relatives and events of relatives
                 PersonDao personDao = new PersonDao(conn);
+                EventDao eventDao = new EventDao(conn);
                 Person baseChild = personDao.get(baseUser.getPersonID());
+                personDao.removeUsersRelatives(userName, baseChild.getPersonID());
+                eventDao.removeUsersRelativesEvents(userName, baseChild.getPersonID());
+
                 db.closeConnection(true);
                 Generation generation = new Generation();
                 generation.genGenerations(baseChild, numGenerations);

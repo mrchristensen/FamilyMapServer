@@ -59,12 +59,26 @@ public class PersonDao extends Dao {
     /**
      * Deletes all persons from the database
      */
-    void removeAll() throws DataAccessException {
+    public void removeAll() throws DataAccessException {
 
 
         String sql = "DELETE FROM Persons;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.executeQuery();
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding person");
+        }
+
+    }
+
+    public void removeUsersRelatives(String username, String id) throws DataAccessException {
+
+        String sql = "DELETE FROM Persons WHERE associatedUsername = ? AND ID != ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, id);
+            stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding person");
