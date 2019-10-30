@@ -18,7 +18,7 @@ public class PersonIDService extends Service {
      * @param personID the id of the event to be retrieved
      * @return the response body for an eventID call
      */
-    public Result retrievePerson(String personID, String userName) {
+    public PersonIDResult retrievePerson(String personID, String userName) {
         PersonIDResult personIDResult = new PersonIDResult();
         Database db = new Database();
         Connection conn = null;
@@ -42,13 +42,13 @@ public class PersonIDService extends Service {
 
         //Check if person was found (if the user searched with a valid personID parameter
         if (person == null) {
-            Result result  = new Result();
+            PersonIDResult result  = new PersonIDResult();
             result.setMessage("Invalid personID parameter");
             return result;
         }
         //Check if the person belongs to the user
         else if(person.getAssociatedUsername().equals(userName) == false){
-            Result result  = new Result();
+            PersonIDResult result  = new PersonIDResult();
             result.setMessage("Requested person does not belong to this\n" +
                     "user");
             return result;

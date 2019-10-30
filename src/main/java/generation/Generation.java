@@ -5,6 +5,7 @@ import dataaccess.Database;
 import dataaccess.EventDao;
 import dataaccess.PersonDao;
 import exceptions.DataAccessException;
+import handlers.JsonDeserialization;
 import model.Event;
 import model.Person;
 import org.json.JSONArray;
@@ -48,8 +49,6 @@ public class Generation {
 
         Database db = new Database();
         Connection conn = db.openConnection();
-
-        conn = db.openConnection();
 
         EventDao eventDao = new EventDao(conn);
         eventDao.insert(genEvent(mom, "Birth", dateOfBirthMom));
@@ -182,6 +181,7 @@ public class Generation {
             e.printStackTrace();
         }
 
+//        List<String> data = JsonDeserialization.deserialize(json, List.class);
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = (JsonObject) jsonParser.parse(json);
         JsonArray jsonArray = (JsonArray) jsonObject.get("data");

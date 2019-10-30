@@ -28,7 +28,7 @@ public class FillService extends Service{
      * @param numGenerations the number of generations to generate
      * @return Response body of fill
      */
-    FillResult fillGenerations(String userName, int numGenerations) throws SQLException {
+    public FillResult fillGenerations(String userName, int numGenerations) throws SQLException {
         FillResult myResult = new FillResult();
 
         Database db = new Database();
@@ -41,6 +41,7 @@ public class FillService extends Service{
             if(baseUser != null){
                 PersonDao personDao = new PersonDao(conn);
                 Person baseChild = personDao.get(baseUser.getPersonID());
+                db.closeConnection(true);
                 Generation generation = new Generation();
                 generation.genGenerations(baseChild, numGenerations);
 
@@ -49,13 +50,16 @@ public class FillService extends Service{
                 int Y = 0;
                 myResult.setMessage("Successfully added " + X + " persons and " + Y + " events to the database.");
             }
+            else{
+                myResult.setMessage("Invalid username");
+            }
         } catch (DataAccessException e) {
             myResult.setMessage("Invalid username");
         } catch (IOException e){
             myResult.setMessage("Invalid numGenerations");
         }
 
-        db.closeConnection(true);
-        return  myResult;
+
+        return myResult;
     }
 }
