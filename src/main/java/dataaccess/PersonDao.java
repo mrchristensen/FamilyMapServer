@@ -1,14 +1,14 @@
 package dataaccess;
 
 import exceptions.DataAccessException;
-import model.AuthToken;
-import model.Event;
-import model.Person;
+import model.*;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Handles all database operations for persons
@@ -67,7 +67,7 @@ public class PersonDao extends Dao {
             stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding event");
+            throw new DataAccessException("Error encountered while finding person");
         }
 
     }
@@ -78,7 +78,7 @@ public class PersonDao extends Dao {
             stmt.executeQuery();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding event");
+            throw new DataAccessException("Error encountered while finding person");
         }
 
     }
@@ -118,13 +118,45 @@ public class PersonDao extends Dao {
         return null;
     }
 
-//    /**
-//     * Retrieves all persons of all family of the current user (from the database)
-//     * @param userAuthToken The auth token of the current user
-//     * @return Array of all persons in the database (of all family members of user)
-//     */
-//    Person[] getAllAncestralPersons(AuthToken userAuthToken){
-//        return null;
-//    }
+    /**
+     * Retrieves all persons of all family of the current user (from the database)
+     * @param associatedUserName The username of the current user
+     * @return Array of all persons in the database (of all family members of user)
+     */
+    public Person[] getAll(String associatedUserName) throws DataAccessException {
+        System.out.println("Get persons related to the user");
+        List<Person> persons = new ArrayList<>();
+        Person person = null;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM Persons WHERE AssociatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, associatedUserName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                person = new Person(rs.getString("ID"), rs.getString("AssociatedUsername"),
+                        rs.getString("firstName"), rs.getString("lastName"), rs.getString("gender"),
+                        rs.getString("fatherID"), rs.getString("motherID"), rs.getString("spouseID"));
+                System.out.println("Found an person that is associated with the user: " + person.getFirstName());
+                persons.add(person);
+            }
+            return persons.toArray(new Person[0]);
+        } catch (SQLException e) {
+            System.out.println("Error encountered while finding person");
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding person");
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    System.out.println("Error!");
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
 
 }

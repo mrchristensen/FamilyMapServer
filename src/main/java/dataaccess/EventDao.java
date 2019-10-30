@@ -101,7 +101,7 @@ public class EventDao extends Dao {
     }
 
     public Event[] getAll(String associatedUserName) throws DataAccessException {
-        System.out.println("Get event with a userName and eventType");
+        System.out.println("Get all events that belong to the user");
         List<Event> events = new ArrayList<>();
         Event event = null;
         ResultSet rs = null;

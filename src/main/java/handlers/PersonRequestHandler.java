@@ -65,11 +65,11 @@ public class PersonRequestHandler implements HttpHandler {
                 result = new PersonIDService().retrievePerson(args[1], associatedUsername);
             } else {
                 System.out.println("Get all relatives of the current user (from auth token)");
-//                try {
-//                    result = new PersonService().retrieveAllPersons(associatedUsername);
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
+                try {
+                    result = new PersonService().retrieveAllPersons(associatedUsername);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
             //Write the response from the server
