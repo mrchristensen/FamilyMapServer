@@ -52,7 +52,7 @@ public class RegisterService extends Service {
         new Generation().genGenerations(usersPerson, 4);
 
         //Logs in the user
-        AuthToken authToken = null;
+        String authToken = null;
         try {
             authToken = login(myRequest);
         } catch (SQLException e) {
@@ -63,7 +63,7 @@ public class RegisterService extends Service {
         }
         //Todo: check for an error and return an error message (with a catch block)
 
-        result.setAuthToken(authToken);
+        result.setAuthTokenString(authToken);
         result.setUserName(myRequest.getUsername());
         result.setPersonID(usersPerson.getPersonID());
 
@@ -114,7 +114,7 @@ public class RegisterService extends Service {
         db.closeConnection(true);
     }
 
-    AuthToken login(RegisterRequest myRequest) throws SQLException {
+    String login(RegisterRequest myRequest) throws SQLException {
         LoginRequest loginRequest = new LoginRequest();
 
         loginRequest.setUsername(myRequest.getUsername());
@@ -122,7 +122,7 @@ public class RegisterService extends Service {
 
         LoginResult loginResult= new LoginService().loginUser(loginRequest);
 
-        return loginResult.getAuthToken();
+        return loginResult.getAuthTokenString();
     }
 
 

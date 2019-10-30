@@ -8,6 +8,7 @@ import result.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.UUID;
 
 /**
  * Handles the login functionality - Logs in the user and returns an auth token
@@ -37,20 +38,20 @@ public class LoginService extends Service {
             return result;
         }
         if(user == null){
-            System.out.println("Error in finding the user (no such user exists)");
+            System.out.println("Error in finding the user (no such user exists): " + myRequest.getUsername());
             result.setMessage("User does not exist");
             return result;
         }
 
         //Make sure the password matches the user
-        if(myRequest.getPassword() != user.getPassword()){
-            System.out.println("Password is incorrect");
+        if(myRequest.getPassword().equals(user.getPassword()) == false){
+            System.out.println("Password is incorrect: " + myRequest.getPassword() + " != " + user.getPassword());
             result.setMessage("Password is incorrect");
             return result;
         }
 
         //Insert the auth token into the authToken table
-        AuthToken authToken = new AuthToken(myRequest.getUsername(), myRequest.getPassword());
+        AuthToken authToken = new AuthToken(myRequest.getUsername(), UUID.randomUUID().toString());
         AuthTokenDao authTokenDao = new AuthTokenDao(conn);
         try {
             authTokenDao.insert(authToken);
@@ -63,7 +64,7 @@ public class LoginService extends Service {
         }
 
         //If we got to this point is was a success
-        result.setAuthToken(authToken);
+        result.setAuthToken(authToken.getAuthTokenString());
         result.setUserName(myRequest.getUsername());
         result.setPersonID(user.getPersonID());
 

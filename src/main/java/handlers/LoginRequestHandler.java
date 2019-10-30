@@ -51,7 +51,7 @@ public class LoginRequestHandler implements HttpHandler {
 
             if (loginResult.getMessage() == null) { //If the error message is null
                 System.out.println("Login was a success." +
-                        "\nauthToken: " + loginResult.getAuthToken() +
+                        "\nauthToken: " + loginResult.getAuthTokenString() +
                         "\nuserName: " + loginResult.getUserName() +
                         "\npersonID: " + loginResult.getPersonID());
                 exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

@@ -37,7 +37,7 @@ public class AuthTokenDao extends Dao {
         String sql = "INSERT INTO authorizationTokens (userName, authToken) VALUES(?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, myAuthToken.getUserName());
-            stmt.setString(2, myAuthToken.getAuthToken());
+            stmt.setString(2, myAuthToken.getAuthTokenString());
 
             stmt.executeUpdate();
         }

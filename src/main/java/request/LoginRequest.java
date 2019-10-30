@@ -8,7 +8,7 @@ public class LoginRequest extends Request {
     /**
      * Unique user name (non-empty string)
      */
-    String username;
+    String userName;
 
     /**
      * User's password (non-empty string)
@@ -27,16 +27,16 @@ public class LoginRequest extends Request {
      * @param password The password of the current user
      */
     public LoginRequest(String username, String password) {
-        this.username = username;
+        this.userName = username;
         this.password = password;
     }
 
     public String getUsername() {
-        return username;
+        return userName;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.userName = username;
     }
 
     public String getPassword() {

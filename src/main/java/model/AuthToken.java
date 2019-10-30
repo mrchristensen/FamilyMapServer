@@ -30,11 +30,11 @@ public class AuthToken {
         this.userName = userName;
     }
 
-    public String getAuthToken() {
+    public String getAuthTokenString() {
         return authToken;
     }
 
-    public void setAuthToken(String authToken) {
+    public void setAuthTokenString(String authToken) {
         this.authToken = authToken;
     }
 

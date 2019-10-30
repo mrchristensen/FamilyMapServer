@@ -10,7 +10,7 @@ public class LoginResult extends Result {
     /**
      * Non-empty auth token
      */
-    AuthToken authToken;
+    String authToken;
 
     /**
      * Unique user name (non-empty string)
@@ -31,17 +31,17 @@ public class LoginResult extends Result {
      * @param userName username of the user
      * @param personID Person ID of the user's Person object
      */
-    public LoginResult(AuthToken authToken, String userName, String personID) {
+    public LoginResult(String authToken, String userName, String personID) {
         this.authToken = authToken;
         this.userName = userName;
         this.personID = personID;
     }
 
-    public AuthToken getAuthToken() {
+    public String getAuthTokenString() {
         return authToken;
     }
 
-    public void setAuthToken(AuthToken authToken) {
+    public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
 
