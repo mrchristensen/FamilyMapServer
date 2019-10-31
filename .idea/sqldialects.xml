@@ -3,5 +3,6 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/src/main/java/dataaccess/AuthTokenDao.java" dialect="SQLite" />
     <file url="file://$PROJECT_DIR$/src/main/java/dataaccess/Database.java" dialect="SQLite" />
+    <file url="file://$PROJECT_DIR$/src/main/java/dataaccess/UserDao.java" dialect="ClickHouse" />
   </component>
 </project>

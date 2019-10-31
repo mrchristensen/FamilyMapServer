@@ -35,14 +35,7 @@ public class RegisterService extends Service {
         Connection conn = db.openConnection();
         UserDao userDao = new UserDao(conn);
         User user = createUser(myRequest, usersPerson.getPersonID());
-        try {
-            userDao.insert(user);
-        } catch (DataAccessException e) {
-            db.closeConnection(false);
-            System.out.println("That username is already taken");
-            result.setMessage("Username already taken by another user");
-            return result;
-        }
+        userDao.insert(user);
         db.closeConnection(true);
 
         //Create and insert a "Birth" event for the user (to help for generation)
@@ -51,16 +44,12 @@ public class RegisterService extends Service {
         //Generate data for the new user (also add user's person to the data base)
         try {
             new Generation().genGenerations(usersPerson, 4);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | SQLException e) {
             e.printStackTrace();
         }
 
         //Logs in the user
-        String authToken = null;
+        String authToken;
         try {
             authToken = login(myRequest);
         } catch (SQLException e) {
@@ -81,7 +70,7 @@ public class RegisterService extends Service {
     /**
      * Helper function to create the new user object
      */
-    User createUser(RegisterRequest myRequest, String personID){
+    private User createUser(RegisterRequest myRequest, String personID){
         String userName = myRequest.getUsername();
         String password = myRequest.getPassword();
         String email = myRequest.getEmail();
@@ -95,7 +84,7 @@ public class RegisterService extends Service {
     /**
      * Helper function to create the new user's person object
      */
-    Person createUserPerson(RegisterRequest myRequest){
+    private Person createUserPerson(RegisterRequest myRequest){
         String personID = UUID.randomUUID().toString();
         String associatedUsername = myRequest.getUsername();
         String firstName = myRequest.getFirstName();
@@ -105,7 +94,7 @@ public class RegisterService extends Service {
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
-    void createBirthEvent(Person person) throws SQLException {
+    private void createBirthEvent(Person person) throws SQLException {
         Event myEvent = new Generation().genEvent(person, "Birth", 1997);
 
         Database db = new Database();
@@ -122,7 +111,7 @@ public class RegisterService extends Service {
         db.closeConnection(true);
     }
 
-    String login(RegisterRequest myRequest) throws SQLException {
+    private String login(RegisterRequest myRequest) throws SQLException {
         LoginRequest loginRequest = new LoginRequest();
 
         loginRequest.setUsername(myRequest.getUsername());

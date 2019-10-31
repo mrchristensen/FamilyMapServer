@@ -9,47 +9,47 @@ public class EventIDResult extends Result {
     /**
      * Name of the user account this person belongs to
      */
-    String associatedUsername;
+    private String associatedUsername;
 
     /**
      * Events's unique ID
      */
-    String eventID;
+    private String eventID;
 
     /**
      * Person's unique ID of whom the event belongs to
      */
-    String personID;
+    private String personID;
 
     /**
      * Events's latitude
      */
-    float latitude;
+    private double latitude;
 
     /**
      * Event's longitude
      */
-    float longitude;
+    private double longitude;
 
     /**
      * Event's country
      */
-    String country;
+    private String country;
 
     /**
      * Event's city
      */
-    String city;
+    private String city;
 
     /**
      * Event's type
      */
-    String eventType;
+    private String eventType;
 
     /**
      * Year of the event
      */
-    int year;
+    private int year;
 
     /**
      * Default constructor
@@ -69,7 +69,7 @@ public class EventIDResult extends Result {
      * @param eventType The type of event
      * @param year The year of the event
      */
-    public EventIDResult(String associatedUsername, String eventID, String personID, float latitude, float longitude, String country, String city, String eventType, int year) {
+    public EventIDResult(String associatedUsername, String eventID, String personID, double latitude, double longitude, String country, String city, String eventType, int year) {
         this.associatedUsername = associatedUsername;
         this.eventID = eventID;
         this.personID = personID;

@@ -29,7 +29,7 @@ public class LoadService extends Service{
         Person[] persons = myRequest.getPersons();
         Event[] events = myRequest.getEvents();
 
-        Connection conn = null;
+        Connection conn;
         Database db = new Database();
         try {
             conn = db.openConnection();
@@ -53,7 +53,7 @@ public class LoadService extends Service{
                 System.out.println("Loading user: " + user.getFirstName());
                 userDao.insert(user);
                 numUsersAdded += 1;
-            } catch (DataAccessException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
                 result.setMessage("Internal server error");
                 return result;

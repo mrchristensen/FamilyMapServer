@@ -24,7 +24,7 @@ public class UserDao extends Dao {
     /**
      * Adds a user to the database
      */
-    public void insert(User myUser) throws DataAccessException {
+    public void insert(User myUser) throws SQLException {
         //Todo: Check to see if the username is already taken and handle the delete and other stuff (watch for this case)
         //We can structure our string to be similar to a sql command, but if we insert question
         //marks we can change them later with help from the statement
@@ -44,7 +44,7 @@ public class UserDao extends Dao {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new DataAccessException("Error while inserting into the database - user already registered");
+            throw e;
         }
     }
 
@@ -100,18 +100,18 @@ public class UserDao extends Dao {
     /**
      * Removes all users from the database
      */
-    void removeAll() throws DataAccessException {
-
-
-        String sql = "DELETE FROM Users;";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding event");
-        }
-
-    }
+//    void removeAll() throws DataAccessException {
+//
+//
+//        String sql = "DELETE FROM Users;";
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.executeQuery();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            throw new DataAccessException("Error encountered while finding event");
+//        }
+//
+//    }
 
     void dropTable() throws DataAccessException {
         String sql = "DROP TABLE Users;";

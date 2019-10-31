@@ -176,65 +176,65 @@ public class UserDaoTest {
 
     }
 
-    @Test
-    public void removeAllPass() throws Exception {
-        //We want to make sure insert works
-        //First lets create an Event that we'll set to null. We'll use this to make sure what we put
-        //in the database is actually there.
-        User compareTest = null;
-
-        try {
-            //Let's get our connection and make a new DAO
-            Connection conn = db.openConnection();
-            UserDao eDao = new UserDao(conn);
-            //While insert returns a bool we can't use that to verify that our function actually worked
-            //only that it ran without causing an error
-            eDao.insert(bestUser);
-
-            eDao.removeAll();
-
-            //So lets use a find method to get the event that we just put in back out
-            compareTest = eDao.get(bestUser.getUserName());
-            db.closeConnection(true);
-        } catch (DataAccessException e) {
-            db.closeConnection(false);
-            System.out.println(e.getMessage());
-        }
-        //First lets see if our find found anything at all. If it did then we know that if nothing
-        //else something was put into our database, since we cleared it in the beginning
-        assertNull(compareTest);
-
-    }
-
-    @Test
-    public void removeAllFail() throws Exception {
-        //We want to make sure insert works
-        //First lets create an Event that we'll set to null. We'll use this to make sure what we put
-        //in the database is actually there.
-        User compareTest = null;
-        boolean error = false;
-        try {
-            //Let's get our connection and make a new DAO
-            Connection conn = db.openConnection();
-            UserDao eDao = new UserDao(conn);
-            //While insert returns a bool we can't use that to verify that our function actually worked
-            //only that it ran without causing an error
+//    @Test
+//    public void removeAllPass() throws Exception {
+//        //We want to make sure insert works
+//        //First lets create an Event that we'll set to null. We'll use this to make sure what we put
+//        //in the database is actually there.
+//        User compareTest = null;
+//
+//        try {
+//            //Let's get our connection and make a new DAO
+//            Connection conn = db.openConnection();
+//            UserDao eDao = new UserDao(conn);
+//            //While insert returns a bool we can't use that to verify that our function actually worked
+//            //only that it ran without causing an error
 //            eDao.insert(bestUser);
-            eDao.dropTable();
-            eDao.removeAll();
-
-            //So lets use a find method to get the event that we just put in back out
-//            compareTest = eDao.get(bestUser.getPersonID());
+//
+//            eDao.removeAll();
+//
+//            //So lets use a find method to get the event that we just put in back out
+//            compareTest = eDao.get(bestUser.getUserName());
 //            db.closeConnection(true);
-        } catch (DataAccessException e) {
-            error = true;
-            db.closeConnection(false);
-            System.out.println(e.getMessage());
-        }
-        //First lets see if our find found anything at all. If it did then we know that if nothing
-        //else something was put into our database, since we cleared it in the beginning
-        assertTrue(error);
-
-    }
+//        } catch (DataAccessException e) {
+//            db.closeConnection(false);
+//            System.out.println(e.getMessage());
+//        }
+//        //First lets see if our find found anything at all. If it did then we know that if nothing
+//        //else something was put into our database, since we cleared it in the beginning
+//        assertNull(compareTest);
+//
+//    }
+//
+//    @Test
+//    public void removeAllFail() throws Exception {
+//        //We want to make sure insert works
+//        //First lets create an Event that we'll set to null. We'll use this to make sure what we put
+//        //in the database is actually there.
+//        User compareTest = null;
+//        boolean error = false;
+//        try {
+//            //Let's get our connection and make a new DAO
+//            Connection conn = db.openConnection();
+//            UserDao eDao = new UserDao(conn);
+//            //While insert returns a bool we can't use that to verify that our function actually worked
+//            //only that it ran without causing an error
+////            eDao.insert(bestUser);
+//            eDao.dropTable();
+//            eDao.removeAll();
+//
+//            //So lets use a find method to get the event that we just put in back out
+////            compareTest = eDao.get(bestUser.getPersonID());
+////            db.closeConnection(true);
+//        } catch (DataAccessException e) {
+//            error = true;
+//            db.closeConnection(false);
+//            System.out.println(e.getMessage());
+//        }
+//        //First lets see if our find found anything at all. If it did then we know that if nothing
+//        //else something was put into our database, since we cleared it in the beginning
+//        assertTrue(error);
+//
+//    }
 
 }

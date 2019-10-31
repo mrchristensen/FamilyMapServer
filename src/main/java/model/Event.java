@@ -7,7 +7,7 @@ import java.util.Objects;
  */
 public class Event {
 
-    public Event(String eventID, String associatedUsername, String personID, float latitude, float longitude, String country, String city, String eventType, int year) {
+    public Event(String eventID, String associatedUsername, String personID, double latitude, double longitude, String country, String city, String eventType, int year) {
         this.eventID = eventID;
         this.associatedUsername = associatedUsername;
         this.personID = personID;
@@ -22,47 +22,47 @@ public class Event {
     /**
      * Unique identifier for this event (non-empty string)
      */
-    String eventID;
+    private String eventID;
 
     /**
      * User (Username) to which this person belongs
      */
-    String associatedUsername;
+    private String associatedUsername;
 
     /**
      * ID of person to which this event belongs
      */
-    String personID;
+    private String personID;
 
     /**
      * Latitude of event’s location
      */
-    float latitude;
+    private double latitude;
 
     /**
      * Longitude of event’s location
      */
-    float longitude;
+    private double longitude;
 
     /**
      * Country in which event occurred
      */
-    String country;
+    private String country;
 
     /**
      * City in which event occurred
      */
-    String city;
+    private String city;
 
     /**
      * Type of event (birth, baptism, christening, marriage, death, etc.)
      */
-    String eventType;
+    private String eventType;
 
     /**
      * Year in which event occurred
      */
-    int year;
+    private int year;
 
     public String getEventID() {
         return eventID;
@@ -88,19 +88,19 @@ public class Event {
         this.personID = personID;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(float latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(float longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
@@ -141,15 +141,15 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Float.compare(event.latitude, latitude) == 0 &&
-                Float.compare(event.longitude, longitude) == 0 &&
+        return Double.compare(event.latitude, latitude) == 0 &&
+                Double.compare(event.longitude, longitude) == 0 &&
                 year == event.year &&
-                eventID.equals(event.eventID) &&
-                associatedUsername.equals(event.associatedUsername) &&
-                personID.equals(event.personID) &&
-                country.equals(event.country) &&
-                city.equals(event.city) &&
-                eventType.equals(event.eventType);
+                Objects.equals(eventID, event.eventID) &&
+                Objects.equals(associatedUsername, event.associatedUsername) &&
+                Objects.equals(personID, event.personID) &&
+                Objects.equals(country, event.country) &&
+                Objects.equals(city, event.city) &&
+                Objects.equals(eventType, event.eventType);
     }
 
     @Override
