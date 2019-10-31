@@ -3,6 +3,7 @@ package service;
 import dataaccess.Database;
 import exceptions.DataAccessException;
 import result.ClearResult;
+import result.Result;
 
 import java.sql.SQLException;
 
@@ -14,20 +15,24 @@ public class ClearService extends Service{
      * Clears the database
      * @return Clear return response body
      */
-    public ClearResult clearDatabase() throws DataAccessException, SQLException {
-        Database db = new Database();
-        db.openConnection();
-        int result = db.clearTables();
-        db.closeConnection(true);
+    public Result clearDatabase() {
+        try {
+            ClearResult clearResult = new ClearResult();
+            Database db = new Database();
 
-        ClearResult clearResult = new ClearResult();
-        if(result == 0) { //Successful
-            clearResult.setMessage("Clear succeeded.");
-        }
-        else { //error
-            clearResult.setMessage("Clear Failed");
-        }
+            db.getConnection();
+            int result = db.clearTables();
+            db.closeConnection(true);
 
-        return clearResult;
+            if (result == 0) { //Successful
+                clearResult.setMessage("Clear succeeded.");
+            } else { //error
+                clearResult.setMessage("Error: Clear Failed");
+            }
+
+            return clearResult;
+        } catch (DataAccessException e) {
+            return new Result(e.toString());
+        }
     }
 }

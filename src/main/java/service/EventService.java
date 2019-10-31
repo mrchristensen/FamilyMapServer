@@ -6,6 +6,7 @@ import exceptions.DataAccessException;
 import handlers.JsonDeserialization;
 import model.Event;
 import result.EventResult;
+import result.Result;
 
 import javax.xml.crypto.Data;
 import java.sql.Connection;
@@ -19,28 +20,26 @@ import java.sql.SQLException;
 public class EventService extends Service{
     /**
      * All family members of the user
-     * @param personID The ID of the user's person object
+     * @param associatedUsername The ID of the user's person object
      * @return The response body for a /event api call
      */
-    public EventResult retrieveAllEvents(String associatedUsername) throws SQLException {
-        EventResult eventResult = new EventResult();
-        Database db = new Database();
-        Connection conn = db.openConnection();
-        EventDao eventDao = new EventDao(conn);
-
-        Event[] data = null;
+    public Result retrieveAllEvents(String associatedUsername) {
         try {
+            EventResult eventResult;
+            Database db = new Database();
+            Connection conn = db.getConnection();
+            EventDao eventDao = new EventDao(conn);
+
+            Event[] data;
             data = eventDao.getAll(associatedUsername);
+
+            db.closeConnection(true);
+            eventResult = new EventResult(data);
+            return eventResult;
         } catch (DataAccessException e) {
             e.printStackTrace();
-            eventResult.setMessage("Internal server error");
-            db.closeConnection(false);
-            return eventResult;
+            return new Result(e.toString());
         }
-
-        db.closeConnection(true);
-        eventResult = new EventResult(data);
-        return eventResult;
     }
 
 }

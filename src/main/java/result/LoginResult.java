@@ -10,19 +10,28 @@ public class LoginResult extends Result {
     /**
      * Non-empty auth token
      */
-    String authToken;
+    private String authToken;
 
     /**
      * Unique user name (non-empty string)
      */
-    String userName;
+    private String userName;
 
     /**
      * Non-empty string containing the Person Id of the user's generated Person object
      */
-    String personID;
+    private String personID;
 
     public LoginResult() {
+    }
+
+    /**
+     * Proper constructor to generate a general response message
+     *
+     * @param message the string that will be interpreted as the message
+     */
+    public LoginResult(String message) {
+        super(message);
     }
 
     /**

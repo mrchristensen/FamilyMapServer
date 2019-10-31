@@ -7,7 +7,7 @@ import java.util.Objects;
  */
 public class Event {
 
-    public Event(String eventID, String associatedUsername, String personID, double latitude, double longitude, String country, String city, String eventType, int year) {
+    public Event(String eventID, String associatedUsername, String personID, float latitude, float longitude, String country, String city, String eventType, int year) {
         this.eventID = eventID;
         this.associatedUsername = associatedUsername;
         this.personID = personID;
@@ -37,12 +37,12 @@ public class Event {
     /**
      * Latitude of event’s location
      */
-    private double latitude;
+    private float latitude;
 
     /**
      * Longitude of event’s location
      */
-    private double longitude;
+    private float longitude;
 
     /**
      * Country in which event occurred
@@ -88,19 +88,19 @@ public class Event {
         this.personID = personID;
     }
 
-    public double getLatitude() {
+    public float getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(float latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public float getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(float longitude) {
         this.longitude = longitude;
     }
 
@@ -141,8 +141,8 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event event = (Event) o;
-        return Double.compare(event.latitude, latitude) == 0 &&
-                Double.compare(event.longitude, longitude) == 0 &&
+        return Float.compare(event.latitude, latitude) == 0 &&
+                Float.compare(event.longitude, longitude) == 0 &&
                 year == event.year &&
                 Objects.equals(eventID, event.eventID) &&
                 Objects.equals(associatedUsername, event.associatedUsername) &&

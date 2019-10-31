@@ -34,25 +34,21 @@ public class FillRequestHandler implements HttpHandler {
         System.out.println("Check so see if the request method is post");
         if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
             System.out.println("Request method is post");
-            FillResult result = new FillResult();
+            FillResult result;
             String[] args = exchange.getRequestURI().toString().split("(?!^)/");
 
             String userName = args[1];
-            int numGenerations = 0;
+            int numGenerations;
 
             //Check to see if numGenerations arg was given
             if (args.length == 3) {
                 numGenerations = Integer.parseInt(args[2]);
             }
             else {
-                numGenerations = 4; //Default is 4 generations
+                numGenerations = 4; //Default is 4 generations (if numGens is NOT provided)
             }
 
-            try {
-                result = new FillService().fillGenerations(userName, numGenerations);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            result = (FillResult) new FillService().fillGenerations(userName, numGenerations);
 
             //Write the response from the server
             System.out.println("Finished finding person(s)");
@@ -60,7 +56,7 @@ public class FillRequestHandler implements HttpHandler {
         }
     }
 
-    void writeOutput(HttpExchange exchange, Result result) throws IOException {
+    private void writeOutput(HttpExchange exchange, Result result) throws IOException {
         exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         OutputStream respBody = exchange.getResponseBody();
         String json = JsonDeserialization.serialize(result);

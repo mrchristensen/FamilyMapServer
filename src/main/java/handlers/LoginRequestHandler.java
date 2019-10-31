@@ -42,13 +42,9 @@ public class LoginRequestHandler implements HttpHandler {
             String jsonString =  result.toString("UTF-8");
 
             LoginRequest request = JsonDeserialization.deserialize(jsonString, LoginRequest.class);
-            LoginResult loginResult = null;
+            LoginResult loginResult;
             System.out.println("Attempting login: " + request.getUsername() + ", password: " + request.getPassword());
-            try {
-                loginResult = new LoginService().loginUser(request);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            loginResult = new LoginService().loginUser(request);
 
             if (loginResult.getMessage() == null) { //If the error message is null
                 System.out.println("Login was a success." +
@@ -65,7 +61,7 @@ public class LoginRequestHandler implements HttpHandler {
                 exchange.close();
             } else { //Error
                 System.out.println("Error during login: " + loginResult.getMessage());
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
                 //Write the response from the server
                 OutputStream respBody = exchange.getResponseBody();

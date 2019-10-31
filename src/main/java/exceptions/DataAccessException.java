@@ -6,6 +6,11 @@ public class DataAccessException extends Exception {
         super(message);
     }
 
+    @Override
+    public String toString() {
+        return getMessage();
+    }
+
     DataAccessException()
     {
         super();

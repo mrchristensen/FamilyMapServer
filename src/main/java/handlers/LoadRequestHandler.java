@@ -43,7 +43,7 @@ public class LoadRequestHandler implements HttpHandler {
             String jsonString = result.toString("UTF-8");
 
             LoadRequest request = JsonDeserialization.deserialize(jsonString, LoadRequest.class);
-            LoadResult loadResult = new LoadService().load(request);
+            LoadResult loadResult = (LoadResult) new LoadService().load(request);
 
             //Send the response
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);

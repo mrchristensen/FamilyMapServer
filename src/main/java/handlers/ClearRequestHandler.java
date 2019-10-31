@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import dataaccess.Database;
 import exceptions.DataAccessException;
 import result.ClearResult;
+import result.Result;
 import service.ClearService;
 
 import java.io.File;
@@ -35,12 +36,8 @@ public class ClearRequestHandler implements HttpHandler {
         if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
             System.out.println("Request method is post");
 
-            ClearResult clearResult = null;
-            try {
-                clearResult = new ClearService().clearDatabase();
-            } catch (DataAccessException | SQLException e) {
-                e.printStackTrace();
-            }
+            Result clearResult;
+            clearResult = new ClearService().clearDatabase();
 
             if (clearResult.getMessage().equals("Clear succeeded.")) {
                 System.out.println("Clear was successful.\nClearResult message: " + clearResult.getMessage());
@@ -54,7 +51,7 @@ public class ClearRequestHandler implements HttpHandler {
                 exchange.close();
             } else { //Error
                 System.out.println("Error during clear: " + clearResult.getMessage());
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
                 //Write the response from the server
                 OutputStream respBody = exchange.getResponseBody();

@@ -7,8 +7,7 @@ public class JsonDeserialization {
         return (new Gson()).fromJson(value, returnType);
     }
 
-    //TODO: clean up or implement
-    public static String serialize(Object myObject) {
+    static String serialize(Object myObject) {
         return new Gson().toJson(myObject);
     }
 }

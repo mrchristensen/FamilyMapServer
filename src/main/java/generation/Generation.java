@@ -40,7 +40,7 @@ public class Generation {
         eventsAdded = 0;
     }
 
-    public void genGenerations(Person child, int numGenerations) throws SQLException, DataAccessException {
+    public void genGenerations(Person child, int numGenerations) throws DataAccessException {
         System.out.println("Generations left: " + numGenerations + "\nChild: " + child.getFirstName());
 
         Person dad = genPerson(child.getAssociatedUsername(), "m");
@@ -57,71 +57,88 @@ public class Generation {
         int dateOfDeathMom = genDeathYear(dateOfBirthMom); //After the birth of child, not more than 120 years after death
         int dateOfDeathDad = genDeathYear(dateOfBirthDad);
 
+
         Database db = new Database();
-        Connection conn = db.openConnection();
+        try (Connection conn = db.getConnection()) {
 
-        EventDao eventDao = new EventDao(conn);
-        eventDao.insert(genEvent(mom, "birth", dateOfBirthMom));
-        eventDao.insert(genEvent(dad, "birth", dateOfBirthDad));
-        eventDao.insert(genEvent(mom, "marriage", dateOfMarriage, locationOfMarriage));
-        eventDao.insert(genEvent(dad, "marriage", dateOfMarriage, locationOfMarriage));
-        eventDao.insert(genEvent(mom, "death", dateOfDeathMom));
-        eventDao.insert(genEvent(dad, "death", dateOfDeathDad));
-        db.closeConnection(true);
-        eventsAdded += 6;
-
-        numGenerations -= 1;
-        if(numGenerations > 0){
-            genGenerations(mom, numGenerations);
-            genGenerations(dad, numGenerations);
-        }
-
-        conn = db.openConnection();
-
-        PersonDao personDao = new PersonDao(conn);
-        if(personDao.get(child.getPersonID()) == null){
-            personDao.insert(child);
-            personsAdded += 1;
-        }
-        if(numGenerations == 0) {
-            personDao.insert(mom);
-            personDao.insert(dad);
-            personsAdded += 2;
-        }
-
-        db.closeConnection(true);
-
-    }
-
-    private int genBirthYear(Person child) {
-        Database db = new Database();
-        Connection conn = null;
-        try {
-            conn = db.openConnection();
+            EventDao eventDao = new EventDao(conn);
+            eventDao.insert(genEvent(mom, "birth", dateOfBirthMom));
+            eventDao.insert(genEvent(dad, "birth", dateOfBirthDad));
+            eventDao.insert(genEvent(mom, "marriage", dateOfMarriage, locationOfMarriage));
+            eventDao.insert(genEvent(dad, "marriage", dateOfMarriage, locationOfMarriage));
+            eventDao.insert(genEvent(mom, "death", dateOfDeathMom));
+            eventDao.insert(genEvent(dad, "death", dateOfDeathDad));
+            db.closeConnection(true);
+            eventsAdded += 6;
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            try {
+                throw e;
+            } catch (DataAccessException ex) {
+                ex.printStackTrace();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        EventDao eventDao = new EventDao(conn);
-        int childBirthyear = 0;
-        try {
-            childBirthyear = eventDao.get(child.getPersonID(), "Birth").getYear();
+
+            numGenerations -= 1;
+            if (numGenerations > 0) {
+                genGenerations(mom, numGenerations);
+                genGenerations(dad, numGenerations);
+            }
+
+        try (Connection conn = db.getConnection()) {
+            PersonDao personDao = new PersonDao(conn);
+            if (personDao.get(child.getPersonID()) == null) {
+                personDao.insert(child);
+                personsAdded += 1;
+            }
+            if (numGenerations == 0) {
+                personDao.insert(mom);
+                personDao.insert(dad);
+                personsAdded += 2;
+            }
+
+            db.closeConnection(true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+            try {
+                throw e;
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
-        try {
-            db.closeConnection(true);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        int low = childBirthyear - 50;
-        int high = childBirthyear - 20;
-        int newBirthyear =  r.nextInt(high-low) + low;
-        System.out.println("New birthyear for parent is : " + newBirthyear + " (Child was born: " + childBirthyear + ")");
-        return newBirthyear;
     }
 
-    private int genDeathYear(int birthYear) {
+        private int genBirthYear(Person child) throws DataAccessException {
+            Database db = new Database();
+            try (Connection conn = db.getConnection()) {
+
+                EventDao eventDao = new EventDao(conn);
+                int childBirthyear = eventDao.get(child.getPersonID(), "birth").getYear();
+
+
+                db.closeConnection(true);
+
+
+                int low = childBirthyear - 50;
+                int high = childBirthyear - 20;
+                int newBirthyear = r.nextInt(high - low) + low;
+                System.out.println("New birthyear for parent is : " + newBirthyear + " (Child was born: " + childBirthyear + ")");
+                return newBirthyear;
+                
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new DataAccessException("Error in generation - generating a birth year");
+            }
+        }
+
+            private int genDeathYear(int birthYear) {
         int low = birthYear + 70;
         int high = birthYear + 96;
         int deathYear =  r.nextInt(high-low) + low;
@@ -130,16 +147,8 @@ public class Generation {
     }
 
     private int genMarriageYear(int birthYear1, int birthYear2){
-
-        int youngestBirthYear;
-
         //Pick the youngest of the two birth years (to ensure no funky marriage dates)
-        if(birthYear1 > birthYear2){
-            youngestBirthYear = birthYear1;
-        }
-        else{
-            youngestBirthYear = birthYear2;
-        }
+        int youngestBirthYear = Math.max(birthYear1, birthYear2);
 
         Random r = new Random();
         int low = youngestBirthYear + 20;
@@ -202,10 +211,10 @@ public class Generation {
         JsonObject jsonObject = (JsonObject) jsonParser.parse(json);
         JsonArray jsonArray = (JsonArray) jsonObject.get("data");
         List<String> myList = new ArrayList<>();
-        System.out.println("\n\tAdding elements from " + myFile.getName());
+        System.out.println("Adding elements from " + myFile.getName());
 
         for (JsonElement element : jsonArray) {
-            System.out.println("Added: " + element);
+//            System.out.println("Added: " + element);
             myList.add(element.toString().replaceAll("\"", "")); //Replace all get rid of extra quotes
         }
 

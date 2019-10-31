@@ -16,27 +16,25 @@ public class PersonService extends Service {
 
     /**
      * All family members of the user
-     * @param personID The ID of the user's person object
+     * @param associatedUsername The ID of the user's person object
      * @return The response body for a /person api call
      */
-    public PersonResult retrieveAllPersons(String associatedUsername) throws SQLException {
-        PersonResult personResult = new PersonResult();
-        Database db = new Database();
-        Connection conn = db.openConnection();
-        PersonDao personDao = new PersonDao(conn);
-
-        Person[] data = null;
+    public Result retrieveAllPersons(String associatedUsername) {
         try {
+            PersonResult personResult;
+            Database db = new Database();
+            Connection conn = db.getConnection();
+            PersonDao personDao = new PersonDao(conn);
+
+            Person[] data;
             data = personDao.getAll(associatedUsername);
+
+            db.closeConnection(true);
+            personResult = new PersonResult(data);
+            return personResult;
         } catch (DataAccessException e) {
             e.printStackTrace();
-            personResult.setMessage("Internal server error");
-            db.closeConnection(false);
-            return personResult;
+            return new Result(e.toString());
         }
-
-        db.closeConnection(true);
-        personResult = new PersonResult(data);
-        return personResult;
     }
 }

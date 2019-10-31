@@ -43,12 +43,9 @@ public class RegisterRequestHandler implements HttpHandler {
             String jsonString =  result.toString("UTF-8");
 
             RegisterRequest request = JsonDeserialization.deserialize(jsonString, RegisterRequest.class);
-            RegisterResult registerResult = null;
-            try {
-                registerResult = new RegisterService().registerUser(request);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            RegisterResult registerResult;
+            registerResult = new RegisterService().registerUser(request);
+            System.out.println(registerResult.toString());
 
             if (registerResult.getMessage() == null) { //If the error message is null
                 System.out.println("Register was a success." +
@@ -65,7 +62,7 @@ public class RegisterRequestHandler implements HttpHandler {
                 exchange.close();
             } else { //Error
                 System.out.println("Error during register: " + registerResult.getMessage());
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_PRECON_FAILED, 0);
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
                 //Write the response from the server
                 OutputStream respBody = exchange.getResponseBody();

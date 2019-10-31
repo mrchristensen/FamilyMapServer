@@ -18,45 +18,40 @@ public class PersonIDService extends Service {
      * @param personID the id of the event to be retrieved
      * @return the response body for an eventID call
      */
-    public PersonIDResult retrievePerson(String personID, String userName) {
-        PersonIDResult personIDResult = new PersonIDResult();
-        Database db = new Database();
-        Connection conn = null;
+    public Result retrievePerson(String personID, String userName) {
         try {
-            conn = db.openConnection();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            personIDResult.setMessage("Internal server error");
-            return personIDResult;
-        }
-        PersonDao personDao = new PersonDao(conn);
+            PersonIDResult personIDResult;
+            Database db = new Database();
+            Connection conn;
+            conn = db.getConnection();
+            PersonDao personDao = new PersonDao(conn);
+            Person person;
 
-        Person person = null;
-
-        try {
             person = personDao.get(personID);
             db.closeConnection(true);
-        } catch (DataAccessException | SQLException e) {
-            e.printStackTrace();
-        }
 
-        //Check if person was found (if the user searched with a valid personID parameter
-        if (person == null) {
-            PersonIDResult result  = new PersonIDResult();
-            result.setMessage("Invalid personID parameter");
-            return result;
-        }
-        //Check if the person belongs to the user
-        else if(person.getAssociatedUsername().equals(userName) == false){
-            PersonIDResult result  = new PersonIDResult();
-            result.setMessage("Requested person does not belong to this\n" +
-                    "user");
-            return result;
-        }
-        //If we reached here we're successful
-        else{
-            personIDResult = new PersonIDResult(person);
-            return personIDResult;
+            //Check if person was found (if the user searched with a valid personID parameter
+            if (person == null) {
+                PersonIDResult result = new PersonIDResult();
+                result.setMessage("Error: Invalid personID parameter");
+                return result;
+            }
+
+            //Check if the person belongs to the user
+            else if (!person.getAssociatedUsername().equals(userName)) {
+                PersonIDResult result = new PersonIDResult();
+                result.setMessage("Error: Requested person does not belong to this user");
+                return result;
+            }
+
+            //If we reached here we're successful
+            else {
+                personIDResult = new PersonIDResult(person);
+                return personIDResult;
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return new Result(e.toString());
         }
     }
 

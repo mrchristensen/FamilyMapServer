@@ -8,6 +8,7 @@ import exceptions.DataAccessException;
 import generation.Generation;
 import model.*;
 import result.FillResult;
+import result.Result;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -22,24 +23,25 @@ import java.sql.SQLException;
  * to be generated, and must be a non-negative integer (the default is 4, which results in 31 new
  * persons each with associated events).
  */
-public class FillService extends Service{
+public class FillService extends Service {
     /**
      * Fills the data base with x generations of data
-     * @param userName the user name of the current user
+     *
+     * @param userName       the user name of the current user
      * @param numGenerations the number of generations to generate
      * @return Response body of fill
      */
-    public FillResult fillGenerations(String userName, int numGenerations) throws SQLException {
-        FillResult myResult = new FillResult();
-
-        Database db = new Database();
-        Connection conn = db.openConnection();
-        UserDao userDao = new UserDao(conn);
-
-        //Todo: make sure that numGenerations is valid
+    public Result fillGenerations(String userName, int numGenerations) {
         try {
+            FillResult myResult = new FillResult();
+
+            Database db = new Database();
+            Connection conn = db.getConnection();
+            UserDao userDao = new UserDao(conn);
+
+            //Todo: make sure that numGenerations is valid
             User baseUser = userDao.get(userName);
-            if(baseUser != null){
+            if (baseUser != null) {
 
                 //Remove all relatives and events of relatives
                 PersonDao personDao = new PersonDao(conn);
@@ -47,11 +49,29 @@ public class FillService extends Service{
                 Person baseChild = personDao.get(baseUser.getPersonID());
                 personDao.removeUsersRelatives(userName, baseChild.getPersonID());
                 eventDao.removeUsersRelativesEvents(userName, baseChild.getPersonID());
+
+                //Create a default
+                Generation generation = new Generation();
+                Event tempBirthEvent = generation.genEvent(baseChild, "birth", 1997);
+                boolean createTempBirthEvent = false;
+                if(eventDao.get(baseChild.getPersonID(), "birth") == null){
+                    //Todo:create a birth event default
+                    System.out.println("NO BIRTH EVENT FOR THE USER'S PERSON");
+                    eventDao.insert(tempBirthEvent);
+                    createTempBirthEvent = true;
+                }
+
                 db.closeConnection(true);
 
                 //Generate ancestral data
-                Generation generation = new Generation();
                 generation.genGenerations(baseChild, numGenerations);
+
+                if(createTempBirthEvent) {
+                    conn = db.getConnection();
+                    eventDao = new EventDao(conn);
+                    eventDao.remove(tempBirthEvent.getEventID());
+                    db.closeConnection(true);
+                }
 
                 //Set response
                 int numPersonsAdded = generation.getPersonsAdded();
@@ -59,17 +79,15 @@ public class FillService extends Service{
                 int numEventsAdded = generation.getEventsAdded();
                 myResult.setMessage("Successfully added " + numPersonsAdded + " persons and " +
                         numEventsAdded + " events to the database.");
+            } else {
+                myResult.setMessage("Error: Invalid username");
             }
-            else{
-                myResult.setMessage("Invalid username");
-            }
+
+
+            return myResult;
         } catch (DataAccessException e) {
-            myResult.setMessage("Invalid username");
-        } catch (IOException e){
-            myResult.setMessage("Invalid numGenerations");
+            e.printStackTrace();
+            return new Result(e.toString());
         }
-
-
-        return myResult;
     }
 }

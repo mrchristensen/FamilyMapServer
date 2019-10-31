@@ -38,8 +38,8 @@ public class EventDao extends Dao {
             stmt.setString(1, myEvent.getEventID());
             stmt.setString(2, myEvent.getAssociatedUsername());
             stmt.setString(3, myEvent.getPersonID());
-            stmt.setDouble(4, myEvent.getLatitude());
-            stmt.setDouble(5, myEvent.getLongitude());
+            stmt.setFloat(4, myEvent.getLatitude());
+            stmt.setFloat(5, myEvent.getLongitude());
             stmt.setString(6, myEvent.getCountry());
             stmt.setString(7, myEvent.getCity());
             stmt.setString(8, myEvent.getEventType());
@@ -47,22 +47,10 @@ public class EventDao extends Dao {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
+            System.out.println("Error in DAO - EventDAO");
+            e.printStackTrace();
             throw new DataAccessException("Error encountered while inserting into the database");
         }
-    }
-
-    /**
-     * Delete an event from the database
-     * @param eventID The id of the event to remove
-     */
-    void remove(String eventID){
-    }
-
-    /**
-     * Deletes all events from the database
-     */
-    void removeAll(){
-
     }
 
     /**
@@ -85,6 +73,7 @@ public class EventDao extends Dao {
                 return event;
             }
         } catch (SQLException e) {
+            System.out.println("Error in DAO - EventDAO");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding event");
         } finally {
@@ -92,6 +81,7 @@ public class EventDao extends Dao {
                 try {
                     rs.close();
                 } catch (SQLException e) {
+                    System.out.println("Error in DAO - EventDAO");
                     e.printStackTrace();
                 }
             }
@@ -103,7 +93,7 @@ public class EventDao extends Dao {
     public Event[] getAll(String associatedUserName) throws DataAccessException {
         System.out.println("Get all events that belong to the user");
         List<Event> events = new ArrayList<>();
-        Event event = null;
+        Event event;
         ResultSet rs = null;
 
         String sql = "SELECT * FROM Events WHERE AssociatedUsername = ?;";
@@ -121,6 +111,7 @@ public class EventDao extends Dao {
             return events.toArray(new Event[0]);
         } catch (SQLException e) {
             System.out.println("Error encountered while finding event");
+            System.out.println("Error in DAO - EventDAO");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding event");
         } finally {
@@ -128,7 +119,7 @@ public class EventDao extends Dao {
                 try {
                     rs.close();
                 } catch (SQLException e) {
-                    System.out.println("Error!");
+                    System.out.println("Error in DAO - EventDAO");
                     e.printStackTrace();
                 }
             }
@@ -138,8 +129,8 @@ public class EventDao extends Dao {
     }
 
     public Event get(String personID, String eventType) throws DataAccessException {
-        System.out.println("Get event with a userName and eventType");
-        Event event = null;
+        System.out.println("Get event with a userName and eventType: " + personID + " " + eventType);
+        Event event;
         ResultSet rs = null;
 
         String sql = "SELECT * FROM Events WHERE PersonID = ? AND EventType = ?;";
@@ -158,6 +149,7 @@ public class EventDao extends Dao {
             }
         } catch (SQLException e) {
             System.out.println("Error encountered while finding event");
+            System.out.println("Error in DAO - EventDAO");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding event");
         } finally {
@@ -166,12 +158,27 @@ public class EventDao extends Dao {
                     rs.close();
                 } catch (SQLException e) {
                     System.out.println("Error!");
+                    System.out.println("Error in DAO - EventDAO");
                     e.printStackTrace();
                 }
             }
 
         }
         return null;
+    }
+
+    public void remove(String eventID) throws DataAccessException {
+
+        String sql = "DELETE FROM Events WHERE EventID = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, eventID);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println("Error in DAO - EventDAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error in removing a single event");
+        }
+
     }
 
     public void removeUsersRelativesEvents(String username, String personID) throws DataAccessException {
@@ -182,6 +189,7 @@ public class EventDao extends Dao {
             stmt.setString(2, personID);
             stmt.executeUpdate();
         } catch (SQLException e) {
+            System.out.println("Error in DAO - EventDAO");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding person");
         }

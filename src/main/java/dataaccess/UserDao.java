@@ -24,7 +24,7 @@ public class UserDao extends Dao {
     /**
      * Adds a user to the database
      */
-    public void insert(User myUser) throws SQLException {
+    public void insert(User myUser) throws DataAccessException {
         //Todo: Check to see if the username is already taken and handle the delete and other stuff (watch for this case)
         //We can structure our string to be similar to a sql command, but if we insert question
         //marks we can change them later with help from the statement
@@ -44,7 +44,9 @@ public class UserDao extends Dao {
 
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw e;
+            System.out.println("Error in DAO - UserDAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error: Username already taken by another user");
         }
     }
 
@@ -67,6 +69,7 @@ public class UserDao extends Dao {
                 return user;
             }
         } catch (SQLException e) {
+            System.out.println("Error in DAO - UserDAO");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding event");
         } finally {
@@ -83,26 +86,9 @@ public class UserDao extends Dao {
     }
 
 //    /**
-//     * Finds all users in the database
-//     * @return Returns an array of all User objects
+//     * Removes all users from the database
 //     */
-//    User[] getAllUsers(){
-//        return null;
-//    }
-
-//    /**
-//     * Remove a user from the database
-//     * @param username The username of the user to remove from the database
-//     */
-//    void removeUser(String username){
-//    }
-
-    /**
-     * Removes all users from the database
-     */
 //    void removeAll() throws DataAccessException {
-//
-//
 //        String sql = "DELETE FROM Users;";
 //        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 //            stmt.executeQuery();
@@ -110,20 +96,15 @@ public class UserDao extends Dao {
 //            e.printStackTrace();
 //            throw new DataAccessException("Error encountered while finding event");
 //        }
-//
 //    }
 
-    void dropTable() throws DataAccessException {
-        String sql = "DROP TABLE Users;";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.executeQuery();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding event");
-        }
-
-    }
-
-
-
+//    void dropTable() throws DataAccessException {
+//        String sql = "DROP TABLE Users;";
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.executeQuery();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            throw new DataAccessException("Error encountered while finding event");
+//        }
+//    }
 }

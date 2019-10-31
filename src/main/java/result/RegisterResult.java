@@ -10,17 +10,17 @@ public class RegisterResult extends Result {
     /**
      * Non-empty auth token string
      */
-    String authToken;
+    private String authToken;
 
     /**
      * User name passed in with request
      */
-    String userName;
+    private String userName;
 
     /**
      * Non-empty string containing the Person ID of the user’s generated Person object
      */
-    String personID;
+    private String personID;
 
     /**
      * Default Constructor
@@ -38,6 +38,10 @@ public class RegisterResult extends Result {
         this.authToken = authToken;
         this.userName = userName;
         this.personID = personID;
+    }
+
+    public RegisterResult(String toString) {
+        super(toString);
     }
 
     public String getAuthToken() {

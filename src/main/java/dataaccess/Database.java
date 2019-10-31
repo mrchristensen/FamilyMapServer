@@ -12,23 +12,30 @@ public class Database {
 
     //Whenever we want to make a change to our database we will have to open a connection and use
     //Statements created by that connection to initiate transactions
-    public Connection openConnection() throws SQLException {
+    public Connection openConnection() throws DataAccessException {
 
         //The Structure for this Connection is driver:language:path
         //The path assumes you start in the root of your project unless given a non-relative path
         final String CONNECTION_URL = "jdbc:sqlite:database/familyMap.sqlite";
 
         // Open a database connection to the file given in the path
-        conn = DriverManager.getConnection(CONNECTION_URL);
+        try {
+            conn = DriverManager.getConnection(CONNECTION_URL);
+            conn.setAutoCommit(false);
+        } catch (SQLException e) {
+            System.out.println("Error in DAO - Database-DAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error opening the connection");
+        }
 
         // Start a transaction
-        conn.setAutoCommit(false);
+
 
 
         return conn;
     }
 
-    public Connection getConnection() throws SQLException {
+    public Connection getConnection() throws DataAccessException {
         if(conn == null) {
             return openConnection();
         } else {
@@ -43,23 +50,28 @@ public class Database {
     //IMPORTANT: IF YOU FAIL TO CLOSE A CONNECTION AND TRY TO REOPEN THE DATABASE THIS WILL CAUSE THE
     //DATABASE TO LOCK. YOUR CODE MUST ALWAYS INCLUDE A CLOSURE OF THE DATABASE NO MATTER WHAT ERRORS
     //OR PROBLEMS YOU ENCOUNTER
-    public void closeConnection(boolean commit) throws SQLException {
+    public void closeConnection(boolean commit) throws DataAccessException {
+        try {
+            if (commit) {
+                //This will commit the changes to the database
+                conn.commit();
+            } else {
+                //If we find out something went wrong, pass a false into closeConnection and this
+                //will rollback any changes we made during this connection
+                conn.rollback();
+            }
 
-        if (commit) {
-            //This will commit the changes to the database
-            conn.commit();
-        } else {
-            //If we find out something went wrong, pass a false into closeConnection and this
-            //will rollback any changes we made during this connection
-            conn.rollback();
+            conn.close();
+            conn = null;
+        } catch (SQLException e) {
+            System.out.println("Error in DAO - Database-DAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error: Unable to close database connection");
         }
-
-        conn.close();
-        conn = null;
 
     }
 
-    public void createTables() throws SQLException {
+    public void createTables() throws DataAccessException {
 
         try (Statement stmt = conn.createStatement()){
             //First lets open our connection to our database.
@@ -128,13 +140,16 @@ public class Database {
             stmt.executeUpdate(sqlAuthTokenTable);
 
             //if we got here without any problems we successfully created the table and can commit
+        } catch (SQLException e) {
+            System.out.println("Error in DAO - Database-DAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while creating tables");
         }
 
 
     }
 
-    public int clearTables() throws DataAccessException
-    {
+    public int clearTables() throws DataAccessException {
 
         try (Statement stmt = conn.createStatement()){
             String sql = "DELETE FROM Events";
@@ -152,8 +167,9 @@ public class Database {
             return 0;
 
         } catch (SQLException e) {
-            return 1;
-//            throw new DataAccessException("SQL Error encountered while clearing tables");
+            System.out.println("Error in DAO - Database-DAO");
+            e.printStackTrace();
+            throw new DataAccessException("SQL Error encountered while clearing tables - clear failed");
         }
     }
 }

@@ -27,60 +27,58 @@ public class EventRequestHandler implements HttpHandler {
      */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        System.out.println("\n\t- Event Request Handler -");
+        try {
+            System.out.println("\n\t- Event Request Handler -");
 
-        // Determine the HTTP request type (GET, POST, etc.)
-        System.out.println("Check so see if the request method is get");
-        if (exchange.getRequestMethod().toUpperCase().equals("GET")) {
-            System.out.println("Request method is get");
-            Result result = new Result();
-            String[] args = exchange.getRequestURI().toString().split("(?!^)/");
-            String authKey = exchange.getRequestHeaders().getFirst("Authorization"); //Todo
+            // Determine the HTTP request type (GET, POST, etc.)
+            System.out.println("Check so see if the request method is get");
+            if (exchange.getRequestMethod().toUpperCase().equals("GET")) {
+                System.out.println("Request method is get");
+                Result result = new Result();
+                String[] args = exchange.getRequestURI().toString().split("(?!^)/");
+                String authKey = exchange.getRequestHeaders().getFirst("Authorization"); //Todo
 
-            //Database and setup
-            Database db = new Database();
-            Connection conn = null;
-            try {
-                conn = db.openConnection();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            AuthTokenDao authTokenDao = new AuthTokenDao(conn);
-            String associatedUsername = null;
-            try {
-                associatedUsername = authTokenDao.getAuthUsername(authKey);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            //Validate auth token
-            if(associatedUsername == null){
-                System.out.println("Invalid auth token in Event Request");
-                result.setMessage("Invalid auth token");
-                writeOutput(exchange, result);
-                return;
-            }
-
-            //See if we're looking for a single event or all that belong to a user
-            if (args.length > 1) {
-                System.out.println("Get a single event (with id of): " + args[1]);
-                result = new EventIDService().retrieveEvent(args[1], associatedUsername);
-            } else {
-                System.out.println("Get all events of the current user (from auth token)");
+                //Database and setup
+                Database db = new Database();
+                Connection conn;
+                conn = db.getConnection();
+                AuthTokenDao authTokenDao = new AuthTokenDao(conn);
+                String associatedUsername = null;
                 try {
-                    result = new EventService().retrieveAllEvents(associatedUsername);
-                } catch (SQLException e) {
+                    associatedUsername = authTokenDao.getAuthUsername(authKey);
+                    db.closeConnection(true);
+                } catch (DataAccessException e) {
                     e.printStackTrace();
                 }
-            }
 
-            //Write the response from the server
-            System.out.println("Finished finding event(s)");
-            writeOutput(exchange, result);
+                //Validate auth token
+                if (associatedUsername == null) {
+                    System.out.println("Invalid auth token in Event Request");
+                    result.setMessage("Error: Invalid auth token");
+                    writeOutput(exchange, result);
+                    return;
+                }
+
+                //See if we're looking for a single event or all that belong to a user
+                if (args.length > 1) {
+                    System.out.println("Get a single event (with id of): " + args[1]);
+                    result = new EventIDService().retrieveEvent(args[1], associatedUsername);
+                } else {
+                    System.out.println("Get all events of the current user (from auth token)");
+                    result = new EventService().retrieveAllEvents(associatedUsername);
+                }
+
+                //Write the response from the server
+                System.out.println("Finished finding event(s)");
+                writeOutput(exchange, result);
+            }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            System.out.println("NO BUENO");
         }
     }
 
-    void writeOutput(HttpExchange exchange, Result result) throws IOException {
+    private void writeOutput(HttpExchange exchange, Result result) throws IOException {
         exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
         OutputStream respBody = exchange.getResponseBody();
         String json = JsonDeserialization.serialize(result);

@@ -45,36 +45,14 @@ public class PersonDao extends Dao {
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new DataAccessException("Error encountered while inserting into the database");
+            throw new DataAccessException("Error encountered while inserting into the database - person already in database");
         }
-    }
-
-//    /**
-//     * Delete an person from the database
-//     * @param personID The ID of the person to remove
-//     */
-//    void removePerson(String personID){
-//    }
-
-    /**
-     * Deletes all persons from the database
-     */
-    public void removeAll() throws DataAccessException {
-
-
-        String sql = "DELETE FROM Persons;";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding person");
-        }
-
     }
 
     public void removeUsersRelatives(String username, String id) throws DataAccessException {
 
         String sql = "DELETE FROM Persons WHERE associatedUsername = ? AND ID != ?;";
+//        String sql = "DELETE FROM Persons WHERE associatedUsername = ?;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, id);
@@ -140,7 +118,7 @@ public class PersonDao extends Dao {
     public Person[] getAll(String associatedUserName) throws DataAccessException {
         System.out.println("Get persons related to the user");
         List<Person> persons = new ArrayList<>();
-        Person person = null;
+        Person person;
         ResultSet rs = null;
 
         String sql = "SELECT * FROM Persons WHERE AssociatedUsername = ?;";

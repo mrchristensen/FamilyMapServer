@@ -24,12 +24,12 @@ public class EventIDResult extends Result {
     /**
      * Events's latitude
      */
-    private double latitude;
+    private float latitude;
 
     /**
      * Event's longitude
      */
-    private double longitude;
+    private float longitude;
 
     /**
      * Event's country
@@ -69,7 +69,7 @@ public class EventIDResult extends Result {
      * @param eventType The type of event
      * @param year The year of the event
      */
-    public EventIDResult(String associatedUsername, String eventID, String personID, double latitude, double longitude, String country, String city, String eventType, int year) {
+    public EventIDResult(String associatedUsername, String eventID, String personID, float latitude, float longitude, String country, String city, String eventType, int year) {
         this.associatedUsername = associatedUsername;
         this.eventID = eventID;
         this.personID = personID;

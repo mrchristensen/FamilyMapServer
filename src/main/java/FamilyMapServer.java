@@ -1,5 +1,6 @@
 import com.sun.net.httpserver.HttpServer;
 import dataaccess.Database;
+import exceptions.DataAccessException;
 import generation.Generation;
 import handlers.*;
 
@@ -17,7 +18,7 @@ public class FamilyMapServer {
             db.createTables(); //Ensure that the tables are created
             db.closeConnection(true);
             startServer(port);
-        } catch (IOException | SQLException e) {
+        } catch (DataAccessException | IOException e) {
             e.printStackTrace();
         }
     }

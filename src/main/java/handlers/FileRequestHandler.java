@@ -34,7 +34,7 @@ public class FileRequestHandler implements HttpHandler {
                 System.out.println("GET Request\nURI (path): '" + path + "'");
                 System.out.println("URI path.toString: '" + path.toString() + "'");
 
-                if(path.toString().equals("/")){
+                if(path.toString().equals("/") || path.toString().equals("")){
                     System.out.println("URI: '/'");
                     myFile = new File("web/index.html");
                 }
@@ -54,7 +54,7 @@ public class FileRequestHandler implements HttpHandler {
 
                 } else {
                     System.out.println("Error in serving file (doesn't exist - 404): " + myFile.getPath());
-                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_NOT_FOUND, 0);
+                    exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
                     //TODO: serve("web/HTML/404.html");
                     myFile = new File("web/HTML/404.html");
@@ -66,13 +66,13 @@ public class FileRequestHandler implements HttpHandler {
                 }
             } else {
                 // We expected a GET but got something else, so we return a "bad request" status code to the client
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_BAD_REQUEST, 0);
+                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             }
         } catch (IOException e) {
             // Some kind of internal error has occurred inside the server (not the
             // client's fault), so we return an "internal server error" status code
             // to the client.
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_SERVER_ERROR, 0);
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
             // Since the server is unable to complete the request, the client will
             // not receive the list of games, so we close the response body output stream,
             // indicating that the response is complete.

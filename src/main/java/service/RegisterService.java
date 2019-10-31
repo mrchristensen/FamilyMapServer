@@ -10,6 +10,7 @@ import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
+import result.Result;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -26,45 +27,41 @@ public class RegisterService extends Service {
      * @param myRequest Request body for register api call
      * @return RegisterService
      */
-    public RegisterResult registerUser(RegisterRequest myRequest) throws SQLException {
-        RegisterResult result = new RegisterResult();
-        Person usersPerson = createUserPerson(myRequest);
-
-        //Adds user to the user database table
+    public RegisterResult registerUser(RegisterRequest myRequest) {
         Database db = new Database();
-        Connection conn = db.openConnection();
-        UserDao userDao = new UserDao(conn);
-        User user = createUser(myRequest, usersPerson.getPersonID());
-        userDao.insert(user);
-        db.closeConnection(true);
+        try(Connection conn = db.getConnection()) {
+            RegisterResult result = new RegisterResult();
+            Person usersPerson = createUserPerson(myRequest);
 
-        //Create and insert a "Birth" event for the user (to help for generation)
-        createBirthEvent(usersPerson);
+            //Adds user to the user database table
 
-        //Generate data for the new user (also add user's person to the data base)
-        try {
+            UserDao userDao = new UserDao(conn);
+            User user = createUser(myRequest, usersPerson.getPersonID());
+            userDao.insert(user);
+            db.closeConnection(true);
+
+            //Create and insert a "birth" event for the user (to help for generation)
+            createBirthEvent(usersPerson);
+
+            //Generate data for the new user (also add user's person to the data base)
             new Generation().genGenerations(usersPerson, 4);
+
+            //Logs in the user
+            String authToken;
+
+            authToken = login(myRequest);
+
+            //Todo: check for an error and return an error message (with a catch block)
+
+            result.setAuthTokenString(authToken);
+            result.setUserName(myRequest.getUsername());
+            result.setPersonID(usersPerson.getPersonID());
+
+            return result;
         } catch (DataAccessException | SQLException e) {
             e.printStackTrace();
+            return new RegisterResult(e.toString());
         }
-
-        //Logs in the user
-        String authToken;
-        try {
-            authToken = login(myRequest);
-        } catch (SQLException e) {
-            System.out.println("Error on logging in the new user");
-            e.printStackTrace();
-            result.setMessage("Internal server error - Login failed");
-            return result;
-        }
-        //Todo: check for an error and return an error message (with a catch block)
-
-        result.setAuthTokenString(authToken);
-        result.setUserName(myRequest.getUsername());
-        result.setPersonID(usersPerson.getPersonID());
-
-        return result;
     }
 
     /**
@@ -94,30 +91,27 @@ public class RegisterService extends Service {
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
-    private void createBirthEvent(Person person) throws SQLException {
-        Event myEvent = new Generation().genEvent(person, "Birth", 1997);
+    private void createBirthEvent(Person person) throws DataAccessException {
+
+        Event myEvent = new Generation().genEvent(person, "birth", 1997);
 
         Database db = new Database();
-        Connection conn = db.openConnection();
+        Connection conn = db.getConnection();
         EventDao eventDao = new EventDao(conn);
 
-        try {
-            eventDao.insert(myEvent);
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            db.closeConnection(false);
-        }
+        eventDao.insert(myEvent);
 
         db.closeConnection(true);
+
     }
 
-    private String login(RegisterRequest myRequest) throws SQLException {
+    private String login(RegisterRequest myRequest) {
         LoginRequest loginRequest = new LoginRequest();
 
         loginRequest.setUsername(myRequest.getUsername());
         loginRequest.setPassword(myRequest.getPassword());
 
-        LoginResult loginResult= new LoginService().loginUser(loginRequest);
+        LoginResult loginResult = new LoginService().loginUser(loginRequest);
 
         return loginResult.getAuthTokenString();
     }
