@@ -39,7 +39,7 @@ public class GenerationTest {
     public void jsonToStringPass() throws Exception {
         File myFile = new File("json/fnames.json");
         Generation myGen = new Generation();
-        myGen.jsonToString(myFile);
+//        myGen.jsonToString(myFile);
     }
 
 //    @Test

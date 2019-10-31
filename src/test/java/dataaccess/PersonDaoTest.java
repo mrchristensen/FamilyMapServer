@@ -13,11 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PersonDaoTest {
     private Database db;
     private Person bestPerson;
+    private Person nextBestPerson;
 
     @BeforeEach
     public void setUp() throws Exception {
         db = new Database();
-        bestPerson = new Person("personID", "associatedUsername", "firstName", "lastName", "f", "fatherID", "motherID", "spouseID");
+        bestPerson = new Person("personID1", "associatedUsername", "firstName", "lastName", "f", "fatherID", "motherID", "spouseID");
+        nextBestPerson = new Person("personID2", "associatedUsername", "firstName", "lastName", "f", "fatherID", "motherID", "spouseID");
 
         db.openConnection();
         db.createTables(); //Ensure that the tables are created
@@ -129,28 +131,71 @@ public class PersonDaoTest {
     }
 
     @Test
-    public void removeAllPass() throws Exception {
-        Person compareTest = null;
+    public void getAllPass() throws Exception {
+        Person[] compareTest = null;
 
         try {
             Connection conn = db.openConnection();
             PersonDao eDao = new PersonDao(conn);
 
             eDao.insert(bestPerson);
-            eDao.removeAll();
+            compareTest = eDao.getAll(bestPerson.getAssociatedUsername());
 
-            compareTest = eDao.get(bestPerson.getPersonID()); //Should be null (because we removed the person)
             db.closeConnection(true);
         } catch (DataAccessException e) {
             db.closeConnection(false);
             System.out.println(e.getMessage());
         }
 
-        assertNull(compareTest);
+        assert compareTest != null;
+        assertEquals(bestPerson, compareTest[0]); //Make sure get returns the same person that we originally had
+
     }
 
     @Test
-    public void removeAllFail() throws Exception {
+    public void getAllFail() throws Exception {
+        Person compareTest[] = null;
+
+        try {
+            Connection conn = db.openConnection();
+            PersonDao eDao = new PersonDao(conn);
+
+            compareTest = eDao.getAll(bestPerson.getAssociatedUsername()); //Get someone that hasn't been added
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertEquals(compareTest.length, 0); //Make sure that null is return as you cannot get a person doesn't exist
+    }
+
+    @Test
+    public void removeUsersRelativesPass() throws Exception {
+        Person compareTest1 = null;
+        Person compareTest2 = null;
+
+        try {
+            Connection conn = db.openConnection();
+            PersonDao eDao = new PersonDao(conn);
+
+            eDao.insert(bestPerson);
+            eDao.insert(nextBestPerson);
+            eDao.removeUsersRelatives(bestPerson.getAssociatedUsername(), bestPerson.getPersonID());
+
+            compareTest1 = eDao.get(bestPerson.getPersonID()); //Should be null (because we removed the person)
+            compareTest2 = eDao.get(nextBestPerson.getPersonID());
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        assertEquals(compareTest1, bestPerson);
+        assertNull(compareTest2);
+    }
+
+    @Test
+    public void removeUsersRelativesFail() throws Exception {
         Person compareTest = null;
         boolean error = false;
 
@@ -159,7 +204,7 @@ public class PersonDaoTest {
             PersonDao eDao = new PersonDao(conn);
 
             eDao.dropTable(); //Drop the table and then try to remove all entries (in a non-existent table)
-            eDao.removeAll();
+            eDao.removeUsersRelatives(bestPerson.getAssociatedUsername(), bestPerson.getPersonID());
 
             db.closeConnection(true);
         } catch (DataAccessException e) { //For trying to clear a non-existent table)

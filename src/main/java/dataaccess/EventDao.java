@@ -89,44 +89,6 @@ public class EventDao extends Dao {
         return null;
     }
 
-    public Event[] getAll(String associatedUserName) throws DataAccessException {
-        System.out.println("Get all events that belong to the user");
-        List<Event> events = new ArrayList<>();
-        Event event;
-        ResultSet rs = null;
-
-        String sql = "SELECT * FROM Events WHERE AssociatedUsername = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, associatedUserName);
-            rs = stmt.executeQuery();
-            while (rs.next()) {
-                event = new Event(rs.getString("EventID"), rs.getString("AssociatedUsername"),
-                        rs.getString("PersonID"), rs.getFloat("Latitude"), rs.getFloat("Longitude"),
-                        rs.getString("Country"), rs.getString("City"), rs.getString("EventType"),
-                        rs.getInt("Year"));
-                System.out.println("Found an event that is associated with the user: " + event.getEventType());
-                events.add(event);
-            }
-            return events.toArray(new Event[0]);
-        } catch (SQLException e) {
-            System.out.println("Error encountered while finding event");
-            System.out.println("Error in DAO - EventDAO");
-            e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding event");
-        } finally {
-            if(rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    System.out.println("Error in DAO - EventDAO");
-                    e.printStackTrace();
-                }
-            }
-
-        }
-
-    }
-
     public Event get(String personID, String eventType) throws DataAccessException {
         System.out.println("Get event with a userName and eventType: " + personID + " " + eventType);
         Event event;
@@ -166,6 +128,44 @@ public class EventDao extends Dao {
         return null;
     }
 
+    public Event[] getAll(String associatedUserName) throws DataAccessException {
+        System.out.println("Get all events that belong to the user");
+        List<Event> events = new ArrayList<>();
+        Event event;
+        ResultSet rs = null;
+
+        String sql = "SELECT * FROM Events WHERE AssociatedUsername = ?;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, associatedUserName);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                event = new Event(rs.getString("EventID"), rs.getString("AssociatedUsername"),
+                        rs.getString("PersonID"), rs.getFloat("Latitude"), rs.getFloat("Longitude"),
+                        rs.getString("Country"), rs.getString("City"), rs.getString("EventType"),
+                        rs.getInt("Year"));
+                System.out.println("Found an event that is associated with the user: " + event.getEventType());
+                events.add(event);
+            }
+            return events.toArray(new Event[0]);
+        } catch (SQLException e) {
+            System.out.println("Error encountered while finding event");
+            System.out.println("Error in DAO - EventDAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding event");
+        } finally {
+            if(rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    System.out.println("Error in DAO - EventDAO");
+                    e.printStackTrace();
+                }
+            }
+
+        }
+
+    }
+
     public void remove(String eventID) throws DataAccessException {
 
         String sql = "DELETE FROM Events WHERE EventID = ?;";
@@ -189,6 +189,17 @@ public class EventDao extends Dao {
             stmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Error in DAO - EventDAO");
+            e.printStackTrace();
+            throw new DataAccessException("Error encountered while finding person");
+        }
+
+    }
+
+    void dropTable() throws DataAccessException {
+        String sql = "DROP TABLE Events;";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.executeQuery();
+        } catch (SQLException e) {
             e.printStackTrace();
             throw new DataAccessException("Error encountered while finding person");
         }

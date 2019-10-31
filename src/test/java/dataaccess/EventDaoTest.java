@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EventDaoTest {
     private Database db;
     private Event bestEvent;
+    private Event nextBestEvent;
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -22,6 +23,9 @@ public class EventDaoTest {
         db = new Database();
         //and a new event with random data
         bestEvent = new Event("Biking_123A", "Gale", "Gale123A",
+                10.3f, 10.3f, "Japan", "Ushiku",
+                "Biking_Around", 2016);
+        nextBestEvent = new Event("Biking_123B", "Gale", "Bob",
                 10.3f, 10.3f, "Japan", "Ushiku",
                 "Biking_Around", 2016);
         //and make sure to initialize our tables since we don't know if our database files exist yet
@@ -113,5 +117,205 @@ public class EventDaoTest {
 
         //Now make sure that compareTest is indeed null
         assertNull(compareTest);
+    }
+
+    @Test
+    public void getPass() throws Exception {
+        Event compareTest = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+            eDao.insert(bestEvent);
+            compareTest = eDao.get(bestEvent.getEventID());
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertEquals(bestEvent, compareTest); //Make sure get returns the same person that we originally had
+
+    }
+
+    @Test
+    public void getFail() throws Exception {
+        Event compareTest = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+
+            compareTest = eDao.get(bestEvent.getEventID()); //Get an event that hasn't been added
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertNull(compareTest); //Make sure that null is return as you cannot get a event doesn't exist
+    }
+
+    @Test
+    public void getSpecificPass() throws Exception {
+        Event compareTest = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+            eDao.insert(bestEvent);
+            compareTest = eDao.get(bestEvent.getPersonID(), bestEvent.getEventType());
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertEquals(bestEvent, compareTest); //Make sure get returns the same person that we originally had
+
+    }
+
+    @Test
+    public void getSpecificFail() throws Exception {
+        Event compareTest = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+
+            compareTest = eDao.get(bestEvent.getPersonID(), bestEvent.getEventType()); //Get an event that hasn't been added
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertNull(compareTest); //Make sure that null is return as you cannot get a event doesn't exist
+    }
+
+    @Test
+    public void getAllPass() throws Exception {
+        Event[] compareTest = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+
+            eDao.insert(bestEvent);
+            compareTest = eDao.getAll(bestEvent.getAssociatedUsername());
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assert compareTest != null;
+        assertEquals(bestEvent, compareTest[0]); //Make sure get returns the same event that we originally had
+
+    }
+
+    @Test
+    public void getAllFail() throws Exception {
+        Event compareTest[] = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+            compareTest = eDao.getAll(bestEvent.getAssociatedUsername()); //Get event that hasn't been added
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertEquals(compareTest.length, 0); //Make sure that null is return as you cannot get a event doesn't exist
+    }
+
+    @Test
+    public void removePass() throws Exception {
+        Event compareTest1 = null;
+        Event compareTest2 = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+
+            eDao.insert(bestEvent);
+            eDao.remove(bestEvent.getEventID());
+            compareTest1 = eDao.get(bestEvent.getEventID()); //Should be null (because we removed the person)
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        assertNull(compareTest1);
+    }
+
+    @Test
+    public void removeFail() throws Exception {
+        boolean error = false;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+            eDao.dropTable(); //Drop the table and then try to remove all entries (in a non-existent table)
+            eDao.remove(bestEvent.getEventID());
+            db.closeConnection(true);
+        } catch (DataAccessException e) { //For trying to clear a non-existent table)
+            error = true;
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertTrue(error);
+    }
+
+    @Test
+    public void removeUsersRelativesEventsPass() throws Exception {
+        Event compareTest1 = null;
+        Event compareTest2 = null;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+
+            eDao.insert(bestEvent);
+            eDao.insert(nextBestEvent);
+            eDao.removeUsersRelativesEvents(bestEvent.getAssociatedUsername(), bestEvent.getPersonID());
+
+            compareTest1 = eDao.get(bestEvent.getEventID()); //Should be null (because we removed the person)
+            compareTest2 = eDao.get(nextBestEvent.getEventID());
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        assertEquals(compareTest1, bestEvent);
+        assertNull(compareTest2);
+    }
+
+    @Test
+    public void removeUsersRelativesEventsFail() throws Exception {
+        Event compareTest = null;
+        boolean error = false;
+
+        try {
+            Connection conn = db.openConnection();
+            EventDao eDao = new EventDao(conn);
+
+            eDao.dropTable(); //Drop the table and then try to remove all entries (in a non-existent table)
+            eDao.removeUsersRelativesEvents(bestEvent.getAssociatedUsername(), bestEvent.getPersonID());
+
+            db.closeConnection(true);
+        } catch (DataAccessException e) { //For trying to clear a non-existent table)
+            error = true;
+            db.closeConnection(false);
+            System.out.println(e.getMessage());
+        }
+
+        assertTrue(error);
     }
 }

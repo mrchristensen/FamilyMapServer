@@ -48,13 +48,6 @@ public class AuthTokenDao extends Dao {
     }
 
 //    /**
-//     * Remove an authToken from the database
-//     * @param myAuthToken the authToken to remove from the database
-//     */
-//    void removeAuthToken(String myAuthToken){
-//    }
-
-//    /**
 //     * Deletes all auth tokens from the database
 //     */
 //    void removeAll() {
