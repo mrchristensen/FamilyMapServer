@@ -66,7 +66,6 @@ public class AuthTokenDao extends Dao {
      * @return The authToken of a given user's current session
      */
     AuthToken getAuthToken(String userName) throws SQLException {
-        //Todo: Handle the multiple sessions thing of a single user???
         AuthToken authToken;
         ResultSet rs = null;
         String sql = "SELECT * FROM AuthorizationTokens WHERE userName = ?;";
@@ -91,7 +90,6 @@ public class AuthTokenDao extends Dao {
     }
 
     public String getAuthUsername(String authToken) throws SQLException {
-        //Todo: Handle the multiple sessions thing of a single user???
         ResultSet rs = null;
         String sql = "SELECT * FROM AuthorizationTokens WHERE authToken = ?;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {

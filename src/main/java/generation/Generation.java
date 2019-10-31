@@ -7,6 +7,8 @@ import dataaccess.PersonDao;
 import exceptions.DataAccessException;
 import handlers.JsonDeserialization;
 import model.Event;
+import model.Location;
+import model.Locations;
 import model.Person;
 import org.json.JSONArray;
 
@@ -24,13 +26,16 @@ public class Generation {
     List<String> femaleNames;
     List<String> maleNames;
     List<String> surNames;
+    List<Location> locations;
     int personsAdded;
     int eventsAdded;
+    Random r = new Random();
 
     public Generation() {
-        femaleNames = jsonToString(new File("json/fnames.json"));
-        maleNames = jsonToString(new File("json/mnames.json"));
-        surNames  = jsonToString(new File("json/snames.json"));
+        femaleNames = jsonToStrings(new File("json/fnames.json"));
+        maleNames = jsonToStrings(new File("json/mnames.json"));
+        surNames  = jsonToStrings(new File("json/snames.json"));
+        locations = jsonToLocations(new File("json/locations.json"));
         personsAdded = 0;
         eventsAdded = 0;
     }
@@ -48,6 +53,7 @@ public class Generation {
         int dateOfBirthMom = genBirthYear(child); //More than 13 before child's date of birth
         int dateOfBirthDad = genBirthYear(child);
         int dateOfMarriage = genMarriageYear(dateOfBirthMom, dateOfBirthDad); //At least 19 years after either's birthday
+        Location locationOfMarriage = locations.get(r.nextInt(locations.size()));;
         int dateOfDeathMom = genDeathYear(dateOfBirthMom); //After the birth of child, not more than 120 years after death
         int dateOfDeathDad = genDeathYear(dateOfBirthDad);
 
@@ -57,8 +63,8 @@ public class Generation {
         EventDao eventDao = new EventDao(conn);
         eventDao.insert(genEvent(mom, "Birth", dateOfBirthMom));
         eventDao.insert(genEvent(dad, "Birth", dateOfBirthDad));
-        eventDao.insert(genEvent(mom, "Marriage", dateOfMarriage));
-        eventDao.insert(genEvent(dad, "Marriage", dateOfMarriage));
+        eventDao.insert(genEvent(mom, "Marriage", dateOfMarriage, locationOfMarriage));
+        eventDao.insert(genEvent(dad, "Marriage", dateOfMarriage, locationOfMarriage));
         eventDao.insert(genEvent(mom, "Death", dateOfDeathMom));
         eventDao.insert(genEvent(dad, "Death", dateOfDeathDad));
         db.closeConnection(true);
@@ -108,7 +114,6 @@ public class Generation {
             e.printStackTrace();
         }
 
-        Random r = new Random();
         int low = childBirthyear - 50;
         int high = childBirthyear - 20;
         int newBirthyear =  r.nextInt(high-low) + low;
@@ -117,7 +122,6 @@ public class Generation {
     }
 
     int genDeathYear(int birthYear) throws SQLException, DataAccessException {
-        Random r = new Random();
         int low = birthYear + 70;
         int high = birthYear + 96;
         int deathYear =  r.nextInt(high-low) + low;
@@ -151,36 +155,41 @@ public class Generation {
      */
     Person genPerson(String associatedUsername, String gender) throws IOException {
         String personID = UUID.randomUUID().toString();
-        Random rand = new Random();
+        Random r = new Random();
         String firstName = "";
         if(gender.equals("f")){
-            firstName = femaleNames.get(rand.nextInt(femaleNames.size()));
+            firstName = femaleNames.get(r.nextInt(femaleNames.size()));
         }
         else if(gender.equals("m")) {
-            firstName = maleNames.get(rand.nextInt(maleNames.size()));
+            firstName = maleNames.get(r.nextInt(maleNames.size()));
         }
         else{
             System.out.println("ERROR!!!!  The gender wasn't detected to be f or m - Generation.java");
         }
 
-        String lastName = surNames.get(rand.nextInt(surNames.size()));
+        String lastName = surNames.get(r.nextInt(surNames.size()));
 
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
     public Event genEvent(Person person, String type, int year){
+        //Do the real genEvent but with a random location
+        return genEvent(person, type, year, locations.get(r.nextInt(locations.size())));
+    }
+
+    public Event genEvent(Person person, String type, int year, Location location){
         String eventID = UUID.randomUUID().toString();
         String associatedUsername = person.getAssociatedUsername();
         String personID = person.getPersonID();
-        float latitude = 0; //Todo
-        float longitude = 0; //Todo
-        String country = "0"; //Todo
-        String city = "0"; //Todo
+        float latitude = location.getLatitude();
+        float longitude = location.getLongitude();
+        String country = location.getCountry();
+        String city = location.getCity();
 
         return new Event(eventID, associatedUsername, personID, latitude, longitude , country, city, type, year);
     }
 
-    public List<String> jsonToString(File myFile){
+    public List<String> jsonToStrings(File myFile){
         String json = "";
         try{
             json = new String(Files.readAllBytes(myFile.toPath()));
@@ -200,6 +209,24 @@ public class Generation {
             myList.add(element.toString().replaceAll("\"", "")); //Replace all get rid of extra quotes
         }
 
+        return myList;
+    }
+
+    private List<Location> jsonToLocations(File myFile) {
+        String json = "";
+        try{
+            json = new String(Files.readAllBytes(myFile.toPath()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Locations data = JsonDeserialization.deserialize(json, Locations.class);
+        List<Location> myList = new ArrayList<>();
+
+        Location[] test = data.getData();
+        for (Location location : test) {
+            myList.add(location);
+        }
         return myList;
     }
 

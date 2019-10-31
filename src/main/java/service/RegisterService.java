@@ -26,7 +26,7 @@ public class RegisterService extends Service {
      * @param myRequest Request body for register api call
      * @return RegisterService
      */
-    public RegisterResult registerUser(RegisterRequest myRequest) throws SQLException, IOException, DataAccessException {
+    public RegisterResult registerUser(RegisterRequest myRequest) throws SQLException {
         RegisterResult result = new RegisterResult();
         Person usersPerson = createUserPerson(myRequest);
 
@@ -49,7 +49,15 @@ public class RegisterService extends Service {
         createBirthEvent(usersPerson);
 
         //Generate data for the new user (also add user's person to the data base)
-        new Generation().genGenerations(usersPerson, 4);
+        try {
+            new Generation().genGenerations(usersPerson, 4);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
 
         //Logs in the user
         String authToken = null;

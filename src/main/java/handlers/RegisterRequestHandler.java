@@ -46,7 +46,7 @@ public class RegisterRequestHandler implements HttpHandler {
             RegisterResult registerResult = null;
             try {
                 registerResult = new RegisterService().registerUser(request);
-            } catch (DataAccessException | SQLException e) {
+            } catch (SQLException e) {
                 e.printStackTrace();
             }
 
