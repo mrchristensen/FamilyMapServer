@@ -2,8 +2,16 @@ package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import request.*;
+import result.*;
+import service.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.sql.SQLException;
 
 public class LoadRequestHandler implements HttpHandler {
     /**
@@ -18,5 +26,31 @@ public class LoadRequestHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         System.out.println("\n\t- Load Request Handler -");
+
+        //Determine the HTTP request type (GET, POST, etc.)
+        System.out.println("Check so see if the request method is post");
+        if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
+            System.out.println("Request method is post");
+
+            InputStream inputStream = exchange.getRequestBody();
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            //StandardCharsets.UTF_8.name() > JDK 7
+            String jsonString = result.toString("UTF-8");
+
+            LoadRequest request = JsonDeserialization.deserialize(jsonString, LoadRequest.class);
+            LoadResult loadResult = new LoadService().load(request);
+
+            //Send the response
+            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
+            OutputStream respBody = exchange.getResponseBody();
+            String json = JsonDeserialization.serialize(loadResult);
+            respBody.write(json.getBytes());
+            exchange.close();
+        }
     }
 }
