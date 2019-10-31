@@ -1,7 +1,7 @@
 package dataaccess;
 
 import exceptions.DataAccessException;
-import model.*;
+import model.Person;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

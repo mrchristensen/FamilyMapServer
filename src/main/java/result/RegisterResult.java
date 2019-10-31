@@ -1,7 +1,5 @@
 package result;
 
-import model.*;
-
 /**
  * Response body for the Register API call
  */

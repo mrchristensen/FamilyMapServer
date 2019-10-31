@@ -1,6 +1,8 @@
 package request;
 
-import model.*;
+import model.Event;
+import model.Person;
+import model.User;
 
 /**
  * Pojo for the Load request body

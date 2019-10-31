@@ -1,12 +1,10 @@
 import com.sun.net.httpserver.HttpServer;
 import dataaccess.Database;
 import exceptions.DataAccessException;
-import generation.Generation;
 import handlers.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.sql.SQLException;
 
 public class FamilyMapServer {
 

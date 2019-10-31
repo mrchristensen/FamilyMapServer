@@ -1,7 +1,8 @@
 package service;
 
-import model.AuthToken;
-import model.*;
+import model.Event;
+import model.Person;
+import model.User;
 
 /**
  * Handles the default service functionality, parent class

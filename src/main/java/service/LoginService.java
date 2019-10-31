@@ -1,13 +1,15 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.AuthTokenDao;
+import dataaccess.Database;
+import dataaccess.UserDao;
 import exceptions.DataAccessException;
-import model.*;
-import request.*;
-import result.*;
+import model.AuthToken;
+import model.User;
+import request.LoginRequest;
+import result.LoginResult;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.UUID;
 
 /**

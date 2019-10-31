@@ -2,19 +2,13 @@ package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import dataaccess.AuthTokenDao;
-import dataaccess.Database;
 import result.FillResult;
 import result.Result;
 import service.FillService;
-import service.PersonIDService;
-import service.PersonService;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 public class FillRequestHandler implements HttpHandler {
     /**

@@ -1,12 +1,13 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.Database;
+import dataaccess.PersonDao;
 import exceptions.DataAccessException;
-import model.*;
-import result.*;
+import model.Person;
+import result.PersonResult;
+import result.Result;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Handles the functionality of retrieving all family members - Returns ALL family members of the current user.

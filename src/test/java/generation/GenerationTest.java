@@ -1,17 +1,10 @@
 package generation;
 
 import dataaccess.Database;
-import exceptions.DataAccessException;
-import generation.Generation;
 import model.Event;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.sql.*;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 //We will use this to test that our insert method is working and failing in the right ways
 public class GenerationTest {

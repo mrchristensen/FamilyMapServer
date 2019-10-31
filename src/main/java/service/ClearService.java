@@ -5,8 +5,6 @@ import exceptions.DataAccessException;
 import result.ClearResult;
 import result.Result;
 
-import java.sql.SQLException;
-
 /**
  * Handles the clear functionality - Delete all data from the database (user accounts, auth tokens, persons, and events)
  */

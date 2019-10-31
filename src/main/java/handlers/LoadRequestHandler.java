@@ -2,9 +2,9 @@ package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import request.*;
-import result.*;
-import service.*;
+import request.LoadRequest;
+import result.LoadResult;
+import service.LoadService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 public class LoadRequestHandler implements HttpHandler {
     /**

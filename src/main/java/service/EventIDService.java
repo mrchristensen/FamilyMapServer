@@ -4,13 +4,10 @@ import dataaccess.Database;
 import dataaccess.EventDao;
 import exceptions.DataAccessException;
 import model.Event;
-import model.Person;
 import result.EventIDResult;
-import result.EventResult;
 import result.Result;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Handles the functionality of retrieving of a single event

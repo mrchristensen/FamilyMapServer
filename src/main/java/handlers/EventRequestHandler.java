@@ -4,10 +4,10 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import dataaccess.AuthTokenDao;
 import dataaccess.Database;
-import dataaccess.EventDao;
 import exceptions.DataAccessException;
-import result.*;
-import service.*;
+import result.Result;
+import service.EventIDService;
+import service.EventService;
 
 import java.io.IOException;
 import java.io.OutputStream;

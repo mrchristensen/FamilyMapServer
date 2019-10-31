@@ -1,12 +1,13 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.Database;
+import dataaccess.PersonDao;
 import exceptions.DataAccessException;
-import model.*;
-import result.*;
+import model.Person;
+import result.PersonIDResult;
+import result.Result;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Handles the functionality of retrieving of a single person - Returns the single Person object with the specified ID

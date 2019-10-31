@@ -1,7 +1,5 @@
 package result;
 
-import model.AuthToken;
-
 /**
  * Response body for the Login API call
  */

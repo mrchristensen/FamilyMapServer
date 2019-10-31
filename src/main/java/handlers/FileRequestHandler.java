@@ -1,13 +1,11 @@
 package handlers;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 import java.io.*;
-import java.net.*;
-import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.nio.file.Files;
 
 

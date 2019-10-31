@@ -1,6 +1,9 @@
 package generation;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dataaccess.Database;
 import dataaccess.EventDao;
 import dataaccess.PersonDao;
@@ -10,13 +13,10 @@ import model.Event;
 import model.Location;
 import model.Locations;
 import model.Person;
-import org.json.JSONArray;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;

@@ -1,21 +1,13 @@
 package handlers;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import dataaccess.Database;
-import exceptions.DataAccessException;
-import result.ClearResult;
 import result.Result;
 import service.ClearService;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.URI;
-import java.nio.file.Files;
-import java.sql.SQLException;
 
 public class ClearRequestHandler implements HttpHandler {
     /**

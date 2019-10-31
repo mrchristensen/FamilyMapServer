@@ -2,15 +2,16 @@ package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import exceptions.DataAccessException;
-import request.*;
-import result.*;
-import service.*;
+import request.LoginRequest;
+import result.LoginResult;
+import service.LoginService;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 
 
 public class LoginRequestHandler implements HttpHandler {

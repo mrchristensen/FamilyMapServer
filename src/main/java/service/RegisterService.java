@@ -5,14 +5,14 @@ import dataaccess.EventDao;
 import dataaccess.UserDao;
 import exceptions.DataAccessException;
 import generation.Generation;
-import model.*;
+import model.Event;
+import model.Person;
+import model.User;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.LoginResult;
 import result.RegisterResult;
-import result.Result;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.UUID;

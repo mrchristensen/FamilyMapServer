@@ -1,7 +1,6 @@
 package dataaccess;
 
 import exceptions.DataAccessException;
-import model.AuthToken;
 import model.Event;
 
 import java.sql.Connection;

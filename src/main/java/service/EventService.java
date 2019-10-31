@@ -3,14 +3,11 @@ package service;
 import dataaccess.Database;
 import dataaccess.EventDao;
 import exceptions.DataAccessException;
-import handlers.JsonDeserialization;
 import model.Event;
 import result.EventResult;
 import result.Result;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Handles the functionality of retrieving all events of all family members

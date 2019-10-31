@@ -1,13 +1,18 @@
 package service;
 
-import dataaccess.*;
+import dataaccess.Database;
+import dataaccess.EventDao;
+import dataaccess.PersonDao;
+import dataaccess.UserDao;
 import exceptions.DataAccessException;
-import model.*;
-import request.*;
-import result.*;
+import model.Event;
+import model.Person;
+import model.User;
+import request.LoadRequest;
+import result.LoadResult;
+import result.Result;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Handles the load functionality

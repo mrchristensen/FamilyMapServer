@@ -6,13 +6,13 @@ import dataaccess.PersonDao;
 import dataaccess.UserDao;
 import exceptions.DataAccessException;
 import generation.Generation;
-import model.*;
+import model.Event;
+import model.Person;
+import model.User;
 import result.FillResult;
 import result.Result;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 /**
  * Handles the fill functionality

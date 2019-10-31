@@ -5,14 +5,14 @@ import com.sun.net.httpserver.HttpHandler;
 import dataaccess.AuthTokenDao;
 import dataaccess.Database;
 import exceptions.DataAccessException;
-import result.*;
-import service.*;
+import result.Result;
+import service.PersonIDService;
+import service.PersonService;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class PersonRequestHandler implements HttpHandler {
     /**
