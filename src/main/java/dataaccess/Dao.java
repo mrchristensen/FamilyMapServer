@@ -24,7 +24,7 @@ public class Dao {
     }
 
     /**
-     * Closes the connection to the databse
+     * Closes the connection to the database
      */
     void closeConnection(){
     }

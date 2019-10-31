@@ -40,6 +40,7 @@ public class LoginService extends Service {
         if(user == null){
             System.out.println("Error in finding the user (no such user exists): " + myRequest.getUsername());
             result.setMessage("User does not exist");
+            db.closeConnection(false);
             return result;
         }
 
@@ -47,6 +48,7 @@ public class LoginService extends Service {
         if(myRequest.getPassword().equals(user.getPassword()) == false){
             System.out.println("Password is incorrect: " + myRequest.getPassword() + " != " + user.getPassword());
             result.setMessage("Password is incorrect");
+            db.closeConnection(false);
             return result;
         }
 
@@ -68,7 +70,15 @@ public class LoginService extends Service {
         result.setUserName(myRequest.getUsername());
         result.setPersonID(user.getPersonID());
 
-        db.closeConnection(true);
+        try {
+            db.closeConnection(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("FOUND IT");
+            result = new LoginResult();
+            result.setMessage("Internal Server Error");
+            return result;
+        }
 
         return result;
     }

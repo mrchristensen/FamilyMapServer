@@ -55,6 +55,7 @@ public class FillService extends Service{
 
                 //Set response
                 int numPersonsAdded = generation.getPersonsAdded();
+                numPersonsAdded += 1; //To account for the user's person
                 int numEventsAdded = generation.getEventsAdded();
                 myResult.setMessage("Successfully added " + numPersonsAdded + " persons and " +
                         numEventsAdded + " events to the database.");

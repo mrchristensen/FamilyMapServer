@@ -43,6 +43,7 @@ public class LoginRequestHandler implements HttpHandler {
 
             LoginRequest request = JsonDeserialization.deserialize(jsonString, LoginRequest.class);
             LoginResult loginResult = null;
+            System.out.println("Attempting login: " + request.getUsername() + ", password: " + request.getPassword());
             try {
                 loginResult = new LoginService().loginUser(request);
             } catch (SQLException e) {

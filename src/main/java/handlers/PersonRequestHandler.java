@@ -47,6 +47,13 @@ public class PersonRequestHandler implements HttpHandler {
             String associatedUsername = null;
             try {
                 associatedUsername = authTokenDao.getAuthUsername(authKey);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                db.closeConnection(true);
             } catch (SQLException e) {
                 e.printStackTrace();
             }

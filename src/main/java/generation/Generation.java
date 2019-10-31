@@ -64,9 +64,10 @@ public class Generation {
         db.closeConnection(true);
         eventsAdded += 6;
 
+        numGenerations -= 1;
         if(numGenerations > 0){
-            genGenerations(mom, numGenerations - 1);
-            genGenerations(dad, numGenerations - 1);
+            genGenerations(mom, numGenerations);
+            genGenerations(dad, numGenerations);
         }
 
         conn = db.openConnection();
@@ -193,9 +194,10 @@ public class Generation {
         JsonArray jsonArray = (JsonArray) jsonObject.get("data");
         List<String> myList = new ArrayList<>();
         System.out.println("\n\tAdding elements from " + myFile.getName());
+
         for (JsonElement element : jsonArray) {
             System.out.println("Added: " + element);
-            myList.add(element.toString());
+            myList.add(element.toString().replaceAll("\"", "")); //Replace all get rid of extra quotes
         }
 
         return myList;
