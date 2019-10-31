@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 public class EventRequestHandler implements HttpHandler {
     /**
@@ -36,7 +35,7 @@ public class EventRequestHandler implements HttpHandler {
                 System.out.println("Request method is get");
                 Result result = new Result();
                 String[] args = exchange.getRequestURI().toString().split("(?!^)/");
-                String authKey = exchange.getRequestHeaders().getFirst("Authorization"); //Todo
+                String authKey = exchange.getRequestHeaders().getFirst("Authorization");
 
                 //Database and setup
                 Database db = new Database();

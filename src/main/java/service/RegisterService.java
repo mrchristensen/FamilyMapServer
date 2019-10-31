@@ -51,8 +51,6 @@ public class RegisterService extends Service {
 
             authToken = login(myRequest);
 
-            //Todo: check for an error and return an error message (with a catch block)
-
             result.setAuthTokenString(authToken);
             result.setUserName(myRequest.getUsername());
             result.setPersonID(usersPerson.getPersonID());

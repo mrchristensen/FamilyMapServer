@@ -9,6 +9,7 @@ import service.*;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 
@@ -39,7 +40,7 @@ public class LoginRequestHandler implements HttpHandler {
                 result.write(buffer, 0, length);
             }
             // StandardCharsets.UTF_8.name() > JDK 7
-            String jsonString =  result.toString("UTF-8");
+            String jsonString =  result.toString(StandardCharsets.UTF_8);
 
             LoginRequest request = JsonDeserialization.deserialize(jsonString, LoginRequest.class);
             LoginResult loginResult;

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 public class LoadRequestHandler implements HttpHandler {
@@ -40,7 +41,7 @@ public class LoadRequestHandler implements HttpHandler {
                 result.write(buffer, 0, length);
             }
             //StandardCharsets.UTF_8.name() > JDK 7
-            String jsonString = result.toString("UTF-8");
+            String jsonString = result.toString(StandardCharsets.UTF_8);
 
             LoadRequest request = JsonDeserialization.deserialize(jsonString, LoadRequest.class);
             LoadResult loadResult = (LoadResult) new LoadService().load(request);

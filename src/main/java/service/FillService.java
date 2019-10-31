@@ -39,7 +39,6 @@ public class FillService extends Service {
             Connection conn = db.getConnection();
             UserDao userDao = new UserDao(conn);
 
-            //Todo: make sure that numGenerations is valid
             User baseUser = userDao.get(userName);
             if (baseUser != null) {
 
@@ -55,7 +54,6 @@ public class FillService extends Service {
                 Event tempBirthEvent = generation.genEvent(baseChild, "birth", 1997);
                 boolean createTempBirthEvent = false;
                 if(eventDao.get(baseChild.getPersonID(), "birth") == null){
-                    //Todo:create a birth event default
                     System.out.println("NO BIRTH EVENT FOR THE USER'S PERSON");
                     eventDao.insert(tempBirthEvent);
                     createTempBirthEvent = true;

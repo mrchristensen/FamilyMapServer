@@ -46,23 +46,19 @@ public class FileRequestHandler implements HttpHandler {
                     System.out.println("File exists\nServing: " + myFile.getPath());
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
-                    //TODO: serve();
                     OutputStream respBody = exchange.getResponseBody();
                     Files.copy(myFile.toPath(), respBody);
                     writeString(myFile.toString(), respBody);
                     exchange.close();
-
                 } else {
                     System.out.println("Error in serving file (doesn't exist - 404): " + myFile.getPath());
                     exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
 
-                    //TODO: serve("web/HTML/404.html");
                     myFile = new File("web/HTML/404.html");
                     OutputStream respBody = exchange.getResponseBody();
                     Files.copy(myFile.toPath(), respBody);
                     writeString(myFile.toString(), respBody);
                     exchange.close();
-
                 }
             } else {
                 // We expected a GET but got something else, so we return a "bad request" status code to the client
