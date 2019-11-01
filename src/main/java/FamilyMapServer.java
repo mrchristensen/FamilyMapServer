@@ -12,7 +12,7 @@ public class FamilyMapServer {
         try{
             int port = Integer.parseInt(args[0]);
             Database db = new Database();
-            db.openConnection();
+            db.getConnection();
             db.createTables(); //Ensure that the tables are created
             db.closeConnection(true);
             startServer(port);

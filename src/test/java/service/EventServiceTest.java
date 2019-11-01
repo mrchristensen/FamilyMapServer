@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import result.Result;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //We will use this to test that our insert method is working and failing in the right ways
-class ClearServiceTest {
+class EventServiceTest {
     private Database db;
     private ClearService cs;
 
@@ -33,36 +33,26 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabasePass1() {
-        Result compareTest;
-
-        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
-                "firstName", "lastName", "f");
-        new RegisterService().registerUser(registerRequest);
-        compareTest = cs.clearDatabase();
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-
-    }
-
-    @Test
-    void clearDatabasePass2() {
-        Result compareTest;
-
+    void retrieveAllEventsPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
                 "firstName", "lastName", "f");
         new RegisterService().registerUser(registerRequest);
 
-        Result users = new PersonService().retrieveAllPersons(registerRequest.getUsername());
+        Result eventResponse = new EventService().retrieveAllEvents(registerRequest.getUsername());
 
-        compareTest = cs.clearDatabase();
+        assertNull(eventResponse.getMessage());
 
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-        assertNull(users.getMessage());
     }
 
     @Test
-    void clearDatabaseFail() {
-        //TAs and Dr. Barker have all said that a negative test for clear is not required
+    void retrieveAllEventsFail() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
+                "firstName", "lastName", "f");
+        new RegisterService().registerUser(registerRequest);
+
+        Result eventResponse = new EventService().retrieveAllEvents("fake username");
+
+        assertNotNull(eventResponse.toString());
     }
 
 }

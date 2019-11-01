@@ -7,11 +7,10 @@ import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import result.Result;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 //We will use this to test that our insert method is working and failing in the right ways
-class ClearServiceTest {
+class FillServiceTest {
     private Database db;
     private ClearService cs;
 
@@ -33,36 +32,27 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabasePass1() {
-        Result compareTest;
-
-        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
-                "firstName", "lastName", "f");
-        new RegisterService().registerUser(registerRequest);
-        compareTest = cs.clearDatabase();
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-
-    }
-
-    @Test
-    void clearDatabasePass2() {
-        Result compareTest;
-
+    void fillGenerationsPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
                 "firstName", "lastName", "f");
         new RegisterService().registerUser(registerRequest);
 
-        Result users = new PersonService().retrieveAllPersons(registerRequest.getUsername());
+        Result result = new FillService().fillGenerations(registerRequest.getUsername(), 1);
 
-        compareTest = cs.clearDatabase();
-
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-        assertNull(users.getMessage());
+        assertNotNull(result.getMessage());
+        assertFalse(result.getMessage().contains("Error"));
     }
 
     @Test
-    void clearDatabaseFail() {
-        //TAs and Dr. Barker have all said that a negative test for clear is not required
+    void fillGenerationsFail() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
+                "firstName", "lastName", "f");
+        new RegisterService().registerUser(registerRequest);
+
+        Result result = new FillService().fillGenerations(registerRequest.getUsername(), -1);
+
+        assertNotNull(result.getMessage());
+        assertTrue(result.getMessage().contains("Error"));
     }
 
 }

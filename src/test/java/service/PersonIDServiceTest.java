@@ -7,11 +7,11 @@ import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
 import result.Result;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //We will use this to test that our insert method is working and failing in the right ways
-class ClearServiceTest {
+class PersonIDServiceTest {
     private Database db;
     private ClearService cs;
 
@@ -33,36 +33,26 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabasePass1() {
-        Result compareTest;
-
-        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
-                "firstName", "lastName", "f");
-        new RegisterService().registerUser(registerRequest);
-        compareTest = cs.clearDatabase();
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-
-    }
-
-    @Test
-    void clearDatabasePass2() {
-        Result compareTest;
-
+    void retrievePersonPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
                 "firstName", "lastName", "f");
         new RegisterService().registerUser(registerRequest);
 
-        Result users = new PersonService().retrieveAllPersons(registerRequest.getUsername());
+        Result personIDResponse = new PersonIDService().retrievePerson(registerRequest.getFirstName(), registerRequest.getUsername());
 
-        compareTest = cs.clearDatabase();
+        assertNotNull(personIDResponse.getMessage());
 
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-        assertNull(users.getMessage());
     }
 
     @Test
-    void clearDatabaseFail() {
-        //TAs and Dr. Barker have all said that a negative test for clear is not required
+    void retrievePersonFail() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
+                "firstName", "lastName", "f");
+        new RegisterService().registerUser(registerRequest);
+
+        Result personIDResponse = new PersonIDService().retrievePerson("fake username", "fake id");
+
+        assertTrue(personIDResponse.getMessage().contains("Error: Invalid personID parameter"));
     }
 
 }

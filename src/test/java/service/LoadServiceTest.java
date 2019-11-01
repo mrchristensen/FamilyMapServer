@@ -1,17 +1,20 @@
 package service;
 
 import dataaccess.Database;
+import model.Event;
+import model.Person;
+import model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.LoadRequest;
 import request.RegisterRequest;
 import result.Result;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 //We will use this to test that our insert method is working and failing in the right ways
-class ClearServiceTest {
+class LoadServiceTest {
     private Database db;
     private ClearService cs;
 
@@ -33,36 +36,28 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabasePass1() {
-        Result compareTest;
-
-        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
-                "firstName", "lastName", "f");
-        new RegisterService().registerUser(registerRequest);
-        compareTest = cs.clearDatabase();
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-
-    }
-
-    @Test
-    void clearDatabasePass2() {
-        Result compareTest;
-
+    void fillGenerationsPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
                 "firstName", "lastName", "f");
         new RegisterService().registerUser(registerRequest);
 
-        Result users = new PersonService().retrieveAllPersons(registerRequest.getUsername());
+        Result result = new LoadService().load(registerRequest.getUsername(), 1);
 
-        compareTest = cs.clearDatabase();
-
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-        assertNull(users.getMessage());
+        assertNotNull(result.getMessage());
+        assertFalse(result.getMessage().contains("Error"));
     }
 
     @Test
-    void clearDatabaseFail() {
-        //TAs and Dr. Barker have all said that a negative test for clear is not required
+    void fillGenerationsFail() {
+        User[] users = null;
+        Person[] persons = null;
+        Event[] events = null;
+
+        LoadRequest loadRequest = new LoadRequest(users, persons, events);
+        Result result = new LoadService().load(loadRequest);
+
+        assertNotNull(result.getMessage());
+        assertTrue(result.getMessage().contains("Error"));
     }
 
 }

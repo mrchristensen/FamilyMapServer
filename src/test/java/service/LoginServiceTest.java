@@ -4,14 +4,14 @@ import dataaccess.Database;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.LoginRequest;
 import request.RegisterRequest;
 import result.Result;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 //We will use this to test that our insert method is working and failing in the right ways
-class ClearServiceTest {
+class LoginServiceTest {
     private Database db;
     private ClearService cs;
 
@@ -33,36 +33,27 @@ class ClearServiceTest {
     }
 
     @Test
-    void clearDatabasePass1() {
-        Result compareTest;
-
+    void loginUserPass() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
                 "firstName", "lastName", "f");
         new RegisterService().registerUser(registerRequest);
-        compareTest = cs.clearDatabase();
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
+        LoginRequest loginRequest = new LoginRequest("username", "password");
+        Result result = new LoginService().loginUser(loginRequest);
 
+        assertNull(result.getMessage());
     }
 
     @Test
-    void clearDatabasePass2() {
-        Result compareTest;
-
+    void loginUserFail() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
                 "firstName", "lastName", "f");
         new RegisterService().registerUser(registerRequest);
 
-        Result users = new PersonService().retrieveAllPersons(registerRequest.getUsername());
+        LoginRequest loginRequest = new LoginRequest("invalid-username", "wrong-password");
+        Result result = new LoginService().loginUser(loginRequest);
 
-        compareTest = cs.clearDatabase();
-
-        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
-        assertNull(users.getMessage());
-    }
-
-    @Test
-    void clearDatabaseFail() {
-        //TAs and Dr. Barker have all said that a negative test for clear is not required
+        assertNotNull(result.getMessage());
+        assertTrue(result.getMessage().contains("Error"));
     }
 
 }

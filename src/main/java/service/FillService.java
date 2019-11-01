@@ -35,6 +35,10 @@ public class FillService extends Service {
         try {
             FillResult myResult = new FillResult();
 
+            if(numGenerations < 0){
+                return new Result("Error: Invalid number of Generations");
+            }
+
             Database db = new Database();
             Connection conn = db.getConnection();
             UserDao userDao = new UserDao(conn);
