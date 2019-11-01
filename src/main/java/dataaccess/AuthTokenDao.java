@@ -59,38 +59,38 @@ public class AuthTokenDao extends Dao {
 //        }
 //    }
 
-    /**
-     *Get the authToken of a given user's current session
-     * @param userName The username of the user
-     * @return The authToken of a given user's current session
-     */
-    AuthToken getAuthToken(String userName) throws DataAccessException {
-        AuthToken authToken;
-        ResultSet rs = null;
-        String sql = "SELECT * FROM AuthorizationTokens WHERE userName = ?;";
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, userName);
-            rs = stmt.executeQuery();
-            if (rs.next()) {
-                authToken = new AuthToken(rs.getString("userName"), rs.getString("authToken"));
-                return authToken;
-            }
-        } catch (SQLException e) {
-            System.out.println("Error in DAO - AuthTokenDAO");
-            e.printStackTrace();
-            throw new DataAccessException("Error encountered while finding person");
-        } finally {
-            if(rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-        return null;
-    }
+//    /**
+//     *Get the authToken of a given user's current session
+//     * @param userName The username of the user
+//     * @return The authToken of a given user's current session
+//     */
+//    AuthToken getAuthToken(String userName) throws DataAccessException {
+//        AuthToken authToken;
+//        ResultSet rs = null;
+//        String sql = "SELECT * FROM AuthorizationTokens WHERE userName = ?;";
+//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+//            stmt.setString(1, userName);
+//            rs = stmt.executeQuery();
+//            if (rs.next()) {
+//                authToken = new AuthToken(rs.getString("userName"), rs.getString("authToken"));
+//                return authToken;
+//            }
+//        } catch (SQLException e) {
+//            System.out.println("Error in DAO - AuthTokenDAO");
+//            e.printStackTrace();
+//            throw new DataAccessException("Error encountered while finding person");
+//        } finally {
+//            if(rs != null) {
+//                try {
+//                    rs.close();
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//        }
+//        return null;
+//    }
 
     public String getAuthUsername(String authToken) throws DataAccessException {
         ResultSet rs = null;
