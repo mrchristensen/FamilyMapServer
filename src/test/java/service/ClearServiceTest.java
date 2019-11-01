@@ -7,11 +7,11 @@ import model.Event;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import result.Result;
 
 import java.sql.Connection;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 //We will use this to test that our insert method is working and failing in the right ways
 public class ClearServiceTest {
@@ -32,20 +32,20 @@ public class ClearServiceTest {
     @Test
     public void clearDatabasePass() throws Exception {
 
-//
-//
-//        //We want to make sure insert works
-//        //First lets create an Event that we'll set to null. We'll use this to make sure what we put
-//        //in the database is actually there.
-//        Result compareTest = null;
-//
-//        try {
-//            compareTest = new ClearService().clearDatabase(); //Test clear
-//            db.closeConnection(true);
-//        } catch (DataAccessException e) {
-//            db.closeConnection(false);
-//        }
-//        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
+
+
+        //We want to make sure insert works
+        //First lets create an Event that we'll set to null. We'll use this to make sure what we put
+        //in the database is actually there.
+        Result compareTest = null;
+
+        try {
+            compareTest = new ClearService().clearDatabase(); //Test clear
+            db.closeConnection(true);
+        } catch (DataAccessException e) {
+            db.closeConnection(false);
+        }
+        assertTrue(compareTest.getMessage().contains("Clear succeeded"));
 
     }
 
