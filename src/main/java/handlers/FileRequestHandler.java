@@ -1,26 +1,32 @@
 package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.nio.file.Files;
 
 
-public class FileRequestHandler implements HttpHandler {
-    // Handles HTTP requests containing the "/ URL path
-    // The "exchange" parameter is an HttpExchange object, which is
-    // defined by Java.
-    // In this context, an "exchange" is an HTTP request/response pair
-    // (i.e., the client and server exchange a request and response).
-    // The HttpExchange object gives the handler access to all of the
-    // details of the HTTP request (Request type [GET or POST],
-    // request headers, request body, etc.).
-    // The HttpExchange object also gives the handler the ability
-    // to construct an HTTP response and send it back to the client
-    // (Status code, headers, response body, etc.).
+public class FileRequestHandler extends RequestHandler {
+    /**
+     *     Handles HTTP requests containing the "/ URL path
+     *      The "exchange" parameter is an HttpExchange object, which is
+     *      defined by Java.
+     *      In this context, an "exchange" is an HTTP request/response pair
+     *      (i.e., the client and server exchange a request and response).
+     *      The HttpExchange object gives the handler access to all of the
+     *      details of the HTTP request (Request type [GET or POST],
+     *      request headers, request body, etc.).
+     *      The HttpExchange object also gives the handler the ability
+     *      to construct an HTTP response and send it back to the client
+     *      (Status code, headers, response body, etc.).
+     * @param exchange the exchange containing the request from the
+     *                 client and used to send the response
+     * @throws IOException if exchange is <code>null</code>
+     */
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         System.out.println("\n\t- File Request Handler -");
@@ -75,16 +81,6 @@ public class FileRequestHandler implements HttpHandler {
             // Display/log the stack trace
             e.printStackTrace();
         }
-    }
-
-    /**
-    *The writeString method writes a String to an OutputStream.
-    */
-    private void writeString(String str, OutputStream os) throws IOException {
-        OutputStreamWriter sw = new OutputStreamWriter(os);
-        BufferedWriter bw = new BufferedWriter(sw);
-        bw.write(str);
-        bw.flush();
     }
 
 }

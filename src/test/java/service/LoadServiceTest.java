@@ -8,15 +8,21 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.LoadRequest;
-import request.RegisterRequest;
 import result.Result;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //We will use this to test that our insert method is working and failing in the right ways
 class LoadServiceTest {
     private Database db;
     private ClearService cs;
+    private Person bestPerson;
+    private Event bestEvent;
+    private User bestUser;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -25,7 +31,13 @@ class LoadServiceTest {
         db.openConnection();
         db.createTables(); //Ensure that the tables are created
         db.closeConnection(true);
-
+        bestPerson = new Person("personID1", "associatedUsername", "firstName",
+                "lastName", "f", "fatherID", "motherID", "spouseID");
+        bestEvent = new Event("Biking_123A", "Gale", "Gale123A",
+                10.3f, 10.3f, "Japan", "Ushiku",
+                "Biking_Around", 2016);
+        bestUser = new User("userName", "password", "email", "firstName",
+                "lastName", "f", "personID");
     }
 
     @AfterEach
@@ -36,28 +48,33 @@ class LoadServiceTest {
     }
 
     @Test
-    void fillGenerationsPass() {
-        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email",
-                "firstName", "lastName", "f");
-        new RegisterService().registerUser(registerRequest);
+    void loadPass() {
+        List<Event> events = new ArrayList<>();
+        List<Person> persons = new ArrayList<>();
+        List<User> users = new ArrayList<>();
+        events.add(bestEvent);
+        users.add(bestUser);
+        persons.add(bestPerson);
 
-        Result result = new LoadService().load(registerRequest.getUsername(), 1);
+        LoadRequest loadRequest = new LoadRequest(users.toArray(new User[0]), persons.toArray(new Person[0]), events.toArray(new Event[0]));
 
-        assertNotNull(result.getMessage());
-        assertFalse(result.getMessage().contains("Error"));
+        Result result = new LoadService().load(loadRequest);
+
+        assertNotNull(result.getMessage());  //Guarantees no error
     }
 
     @Test
-    void fillGenerationsFail() {
-        User[] users = null;
-        Person[] persons = null;
-        Event[] events = null;
+    void loadFail() {
+        List<Event> events = new ArrayList<>();
+        List<Person> persons = new ArrayList<>();
+        List<User> users = new ArrayList<>();
 
-        LoadRequest loadRequest = new LoadRequest(users, persons, events);
+        LoadRequest loadRequest = new LoadRequest(users.toArray(new User[0]), persons.toArray(new Person[0]), events.toArray(new Event[0]));
+
         Result result = new LoadService().load(loadRequest);
 
-        assertNotNull(result.getMessage());
-        assertTrue(result.getMessage().contains("Error"));
+        assertNotNull(result.getMessage());  //Guarantees no error
+        assertTrue(result.getMessage().contains("added 0"));
     }
 
 }

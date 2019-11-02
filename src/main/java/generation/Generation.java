@@ -1,28 +1,24 @@
 package generation;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import dataaccess.Database;
 import dataaccess.EventDao;
 import dataaccess.PersonDao;
 import exceptions.DataAccessException;
-import handlers.JsonDeserialization;
 import model.Event;
 import model.Location;
-import model.Locations;
 import model.Person;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+
+import static handlers.JsonDeserialization.jsonToLocations;
+import static handlers.JsonDeserialization.jsonToStrings;
 
 public class Generation {
-
     private List<String> femaleNames;
     private List<String> maleNames;
     private List<String> surNames;
@@ -34,12 +30,17 @@ public class Generation {
     public Generation() {
         femaleNames = jsonToStrings(new File("json/fnames.json"));
         maleNames = jsonToStrings(new File("json/mnames.json"));
-        surNames  = jsonToStrings(new File("json/snames.json"));
+        surNames = jsonToStrings(new File("json/snames.json"));
         locations = jsonToLocations(new File("json/locations.json"));
         personsAdded = 0;
         eventsAdded = 0;
     }
 
+    /**
+     * Generate X generations of family history data for the initially passed in child (recursive)
+     * @param child Who to give parents to
+     * @param numGenerations How many generations
+     */
     public void genGenerations(Person child, int numGenerations) throws DataAccessException {
         System.out.println("Generations left: " + numGenerations + "\nChild: " + child.getFirstName());
 
@@ -57,10 +58,8 @@ public class Generation {
         int dateOfDeathMom = genDeathYear(dateOfBirthMom); //After the birth of child, not more than 120 years after death
         int dateOfDeathDad = genDeathYear(dateOfBirthDad);
 
-
         Database db = new Database();
         try (Connection conn = db.getConnection()) {
-
             EventDao eventDao = new EventDao(conn);
             eventDao.insert(genEvent(mom, "birth", dateOfBirthMom));
             eventDao.insert(genEvent(dad, "birth", dateOfBirthDad));
@@ -81,11 +80,11 @@ public class Generation {
             e.printStackTrace();
         }
 
-            numGenerations -= 1;
-            if (numGenerations > 0) {
-                genGenerations(mom, numGenerations);
-                genGenerations(dad, numGenerations);
-            }
+        numGenerations -= 1;
+        if (numGenerations > 0) {
+            genGenerations(mom, numGenerations);
+            genGenerations(dad, numGenerations);
+        }
 
         try (Connection conn = db.getConnection()) {
             PersonDao personDao = new PersonDao(conn);
@@ -100,79 +99,90 @@ public class Generation {
             }
 
             db.closeConnection(true);
-
         } catch (SQLException e) {
             e.printStackTrace();
-
             try {
                 throw e;
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
-
         } catch (DataAccessException e) {
             e.printStackTrace();
         }
     }
 
-        private int genBirthYear(Person child) throws DataAccessException {
-            Database db = new Database();
-            try (Connection conn = db.getConnection()) {
+    /**
+     * Generate a birth year (in relation to the child's birth year)
+     * @param child The child of the person
+     * @return Birth year of the parent
+     */
+    private int genBirthYear(Person child) throws DataAccessException {
+        Database db = new Database();
+        try (Connection conn = db.getConnection()) {
 
-                EventDao eventDao = new EventDao(conn);
-                int childBirthyear = eventDao.get(child.getPersonID(), "birth").getYear();
+            EventDao eventDao = new EventDao(conn);
+            int childBirthYear = eventDao.get(child.getPersonID(), "birth").getYear();
 
+            db.closeConnection(true);
 
-                db.closeConnection(true);
-
-
-                int low = childBirthyear - 50;
-                int high = childBirthyear - 20;
-                int newBirthyear = r.nextInt(high - low) + low;
-                System.out.println("New birthyear for parent is : " + newBirthyear + " (Child was born: " + childBirthyear + ")");
-                return newBirthyear;
-                
-            } catch (SQLException e) {
-                e.printStackTrace();
-                throw new DataAccessException("Error in generation - generating a birth year");
-            }
+            int low = childBirthYear - 50;
+            int high = childBirthYear - 20;
+            int newBirthYear = r.nextInt(high - low) + low;
+            System.out.println("New birthyear for parent is : " + newBirthYear + " (Child was born: " + childBirthYear + ")");
+            return newBirthYear;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new DataAccessException("Error in generation - generating a birth year");
         }
+    }
 
-            private int genDeathYear(int birthYear) {
+    /**
+     * Generates the death year for the parent (in relation to the person's birth year)
+     * @param birthYear Birth year of the person
+     * @return Death year of the person
+     */
+    private int genDeathYear(int birthYear) {
         int low = birthYear + 70;
         int high = birthYear + 96;
-        int deathYear =  r.nextInt(high-low) + low;
-        System.out.println("Died on year: " + deathYear + " (Died at age " + (deathYear-birthYear) + ")");
+        int deathYear = r.nextInt(high - low) + low;
+        System.out.println("Died on year: " + deathYear + " (Died at age " + (deathYear - birthYear) + ")");
         return deathYear;
     }
 
-    private int genMarriageYear(int birthYear1, int birthYear2){
+    /**
+     * Generate a marriage year (based off of the two persons' birth years)
+     * @param birthYear1 Birth year of the first person
+     * @param birthYear2 Birth year of the second person
+     * @return The marriage date for the couple
+     */
+    private int genMarriageYear(int birthYear1, int birthYear2) {
         //Pick the youngest of the two birth years (to ensure no funky marriage dates)
         int youngestBirthYear = Math.max(birthYear1, birthYear2);
 
         Random r = new Random();
         int low = youngestBirthYear + 20;
         int high = youngestBirthYear + 35;
-        int marriageYear =  r.nextInt(high-low) + low;
+        int marriageYear = r.nextInt(high - low) + low;
         System.out.println("Married on year: " + marriageYear + " at age: " + (marriageYear - birthYear1) +
-                            " and " + (marriageYear - birthYear2) + ")");
+                " and " + (marriageYear - birthYear2) + ")");
         return marriageYear;
     }
 
     /**
      * Generate a person
+     * @param associatedUsername Who this person object belongs to (the current user's username)
+     * @param gender The gender of the person we want to generate
+     * @return The generated person
      */
     private Person genPerson(String associatedUsername, String gender) {
         String personID = UUID.randomUUID().toString();
         Random r = new Random();
         String firstName = "";
-        if(gender.equals("f")){
+        if (gender.equals("f")) {
             firstName = femaleNames.get(r.nextInt(femaleNames.size()));
-        }
-        else if(gender.equals("m")) {
+        } else if (gender.equals("m")) {
             firstName = maleNames.get(r.nextInt(maleNames.size()));
-        }
-        else{
+        } else {
             System.out.println("ERROR!!!!  The gender wasn't detected to be f or m - Generation.java");
         }
 
@@ -181,12 +191,27 @@ public class Generation {
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
-    public Event genEvent(Person person, String type, int year){
+    /**
+     * Generate an event wrapper that auto-creates a random location
+     * @param person The person who's event it is
+     * @param type The type of event (birth, death, marriage, etc)
+     * @param year Year of the event
+     * @return The generated event
+     */
+    public Event genEvent(Person person, String type, int year) {
         //Do the real genEvent but with a random location
         return genEvent(person, type, year, locations.get(r.nextInt(locations.size())));
     }
 
-    private Event genEvent(Person person, String type, int year, Location location){
+    /**
+     * Generate a random event
+     * @param person Person who's event it is
+     * @param type Type of event (birth, death, marriage, etc)
+     * @param year Year of the event
+     * @param location Location of the event
+     *@return The generated event
+     */
+    private Event genEvent(Person person, String type, int year, Location location) {
         String eventID = UUID.randomUUID().toString();
         String associatedUsername = person.getAssociatedUsername();
         String personID = person.getPersonID();
@@ -195,52 +220,21 @@ public class Generation {
         String country = location.getCountry();
         String city = location.getCity();
 
-        return new Event(eventID, associatedUsername, personID, latitude, longitude , country, city, type, year);
+        return new Event(eventID, associatedUsername, personID, latitude, longitude, country, city, type, year);
     }
 
-    private List<String> jsonToStrings(File myFile){
-        String json = "";
-        try{
-            json = new String(Files.readAllBytes(myFile.toPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-//        List<String> data = JsonDeserialization.deserialize(json, List.class);
-        JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = (JsonObject) jsonParser.parse(json);
-        JsonArray jsonArray = (JsonArray) jsonObject.get("data");
-        List<String> myList = new ArrayList<>();
-        System.out.println("Adding elements from " + myFile.getName());
-
-        for (JsonElement element : jsonArray) {
-//            System.out.println("Added: " + element);
-            myList.add(element.toString().replaceAll("\"", "")); //Replace all get rid of extra quotes
-        }
-
-        return myList;
-    }
-
-    private List<Location> jsonToLocations(File myFile) {
-        String json = "";
-        try{
-            json = new String(Files.readAllBytes(myFile.toPath()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Locations data = JsonDeserialization.deserialize(json, Locations.class);
-        List<Location> myList = new ArrayList<>();
-
-        Location[] locations = data.getData();
-        Collections.addAll(myList, locations);
-        return myList;
-    }
-
+    /**
+     * Get the count of persons added
+     * @return Count of the persons added
+     */
     public int getPersonsAdded() {
         return personsAdded;
     }
 
+    /**
+     * Get the count of events added
+     * @return Count of the events added
+     */
     public int getEventsAdded() {
         return eventsAdded;
     }

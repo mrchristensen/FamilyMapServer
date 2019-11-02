@@ -1,15 +1,12 @@
 package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import result.Result;
 import service.ClearService;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
 
-public class ClearRequestHandler implements HttpHandler {
+public class ClearRequestHandler extends RequestHandler {
     /**
      * Handle the given request and generate an appropriate response.
      * See {@link HttpExchange} for a description of the steps
@@ -24,34 +21,20 @@ public class ClearRequestHandler implements HttpHandler {
         System.out.println("\n\t- Clear Request Handler -");
 
         // Determine the HTTP request type (GET, POST, etc.)
-        System.out.println("Check so see if the request method is post");
-        if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
-            System.out.println("Request method is post");
-
-            Result clearResult;
-            clearResult = new ClearService().clearDatabase();
-
-            if (clearResult.getMessage().equals("Clear succeeded.")) {
-                System.out.println("Clear was successful.\nClearResult message: " + clearResult.getMessage());
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-
-                //Write the response from the server
-                OutputStream respBody = exchange.getResponseBody();
-                String json = JsonDeserialization.serialize(clearResult);
-                respBody.write(json.getBytes());
-
-                exchange.close();
-            } else { //Error
-                System.out.println("Error during clear: " + clearResult.getMessage());
-                exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-
-                //Write the response from the server
-                OutputStream respBody = exchange.getResponseBody();
-                String json = JsonDeserialization.serialize(clearResult);
-                respBody.write(json.getBytes());
-
-                exchange.close();
-            }
+        if (!verifyRequestMethod(exchange, "POST")) {
+            Result result = new Result();
+            result.setMessage("Error: Invalid Request Method");
+            writeOutput(exchange, result);
+            exchange.close();
+            return;
         }
+
+        Result clearResult;
+        clearResult = new ClearService().clearDatabase();
+
+        System.out.println("Finished Clear: " + clearResult.getMessage());
+        writeOutput(exchange, clearResult);
+        exchange.close();
     }
+
 }

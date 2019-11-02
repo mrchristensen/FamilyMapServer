@@ -20,16 +20,6 @@ public class AuthTokenDao extends Dao {
     }
 
     /**
-     * Handles a new session for a given user
-     * @param userName the username of the user logging-in
-     * @return the auth token of this session (tied to the user)
-     */
-    AuthToken startSession(String userName){
-
-        return null;
-    }
-
-    /**
      * Insert an authToken into the database
      * @param myAuthToken The authToken to insert into the database
      */
@@ -46,51 +36,6 @@ public class AuthTokenDao extends Dao {
             throw new DataAccessException("Error encountered while finding person");
         }
     }
-
-//    /**
-//     * Deletes all auth tokens from the database
-//     */
-//    void removeAll() {
-//        String sql = "DELETE FROM AuthorizationTokens;";
-//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-//            stmt.executeQuery();
-//        } catch (SQLException e) {
-//            throw new DataAccessException("Error encountered while finding person")
-//        }
-//    }
-
-//    /**
-//     *Get the authToken of a given user's current session
-//     * @param userName The username of the user
-//     * @return The authToken of a given user's current session
-//     */
-//    AuthToken getAuthToken(String userName) throws DataAccessException {
-//        AuthToken authToken;
-//        ResultSet rs = null;
-//        String sql = "SELECT * FROM AuthorizationTokens WHERE userName = ?;";
-//        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-//            stmt.setString(1, userName);
-//            rs = stmt.executeQuery();
-//            if (rs.next()) {
-//                authToken = new AuthToken(rs.getString("userName"), rs.getString("authToken"));
-//                return authToken;
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error in DAO - AuthTokenDAO");
-//            e.printStackTrace();
-//            throw new DataAccessException("Error encountered while finding person");
-//        } finally {
-//            if(rs != null) {
-//                try {
-//                    rs.close();
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
-//        return null;
-//    }
 
     public String getAuthUsername(String authToken) throws DataAccessException {
         ResultSet rs = null;
@@ -114,7 +59,6 @@ public class AuthTokenDao extends Dao {
                     e.printStackTrace();
                 }
             }
-
         }
         return null;
     }

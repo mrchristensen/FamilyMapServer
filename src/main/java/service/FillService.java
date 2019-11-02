@@ -85,7 +85,6 @@ public class FillService extends Service {
                 myResult.setMessage("Error: Invalid username");
             }
 
-
             return myResult;
         } catch (DataAccessException e) {
             e.printStackTrace();

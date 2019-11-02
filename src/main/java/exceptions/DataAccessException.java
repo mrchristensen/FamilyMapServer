@@ -10,9 +10,4 @@ public class DataAccessException extends Exception {
     public String toString() {
         return getMessage();
     }
-
-    DataAccessException()
-    {
-        super();
-    }
 }

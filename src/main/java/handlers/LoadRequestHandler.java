@@ -1,19 +1,16 @@
 package handlers;
 
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import request.LoadRequest;
 import result.LoadResult;
+import result.Result;
 import service.LoadService;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
 
-public class LoadRequestHandler implements HttpHandler {
+import static handlers.JsonDeserialization.inputStreamToString;
+
+public class LoadRequestHandler extends RequestHandler {
     /**
      * Handle the given request and generate an appropriate response.
      * See {@link HttpExchange} for a description of the steps
@@ -27,30 +24,23 @@ public class LoadRequestHandler implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         System.out.println("\n\t- Load Request Handler -");
 
-        //Determine the HTTP request type (GET, POST, etc.)
-        System.out.println("Check so see if the request method is post");
-        if (exchange.getRequestMethod().toUpperCase().equals("POST")) {
-            System.out.println("Request method is post");
-
-            InputStream inputStream = exchange.getRequestBody();
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) != -1) {
-                result.write(buffer, 0, length);
-            }
-            //StandardCharsets.UTF_8.name() > JDK 7
-            String jsonString = result.toString(StandardCharsets.UTF_8);
-
-            LoadRequest request = JsonDeserialization.deserialize(jsonString, LoadRequest.class);
-            LoadResult loadResult = (LoadResult) new LoadService().load(request);
-
-            //Send the response
-            exchange.sendResponseHeaders(HttpURLConnection.HTTP_OK, 0);
-            OutputStream respBody = exchange.getResponseBody();
-            String json = JsonDeserialization.serialize(loadResult);
-            respBody.write(json.getBytes());
+        // Determine the HTTP request type (GET, POST, etc.)
+        if (!verifyRequestMethod(exchange, "POST")) {
+            Result result = new Result();
+            result.setMessage("Error: Invalid Request Method");
+            writeOutput(exchange, result);
             exchange.close();
+            return;
         }
+
+        String jsonString = inputStreamToString(exchange.getRequestBody());
+
+        LoadRequest request = JsonDeserialization.deserialize(jsonString, LoadRequest.class);
+        LoadResult loadResult = (LoadResult) new LoadService().load(request);
+
+        //Send the response
+        writeOutput(exchange, loadResult);
+        exchange.close();
     }
+
 }

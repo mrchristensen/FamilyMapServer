@@ -7,15 +7,19 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Handles the database connections and tables
+ */
 public class Database {
     private Connection conn;
 
-    //Whenever we want to make a change to our database we will have to open a connection and use
-    //Statements created by that connection to initiate transactions
+    /**
+     * Open a connection to the database to initiate transactions
+     * @return A valid, open, connection
+     * @throws DataAccessException Any DAO errors
+     */
     public Connection openConnection() throws DataAccessException {
-
-        //The Structure for this Connection is driver:language:path
-        //The path assumes you start in the root of your project unless given a non-relative path
+        //The path to the database (Structure for this Connection is driver:language:path)
         final String CONNECTION_URL = "jdbc:sqlite:database/familyMap.sqlite";
 
         // Open a database connection to the file given in the path
@@ -28,13 +32,14 @@ public class Database {
             throw new DataAccessException("Error opening the connection");
         }
 
-        // Start a transaction
-
-
-
         return conn;
     }
 
+    /**
+     * Opens a new connection if there isn't one, else returns the current connection (singleton)
+     * @return An open connection
+     * @throws DataAccessException Any DAO errors
+     */
     public Connection getConnection() throws DataAccessException {
         if(conn == null) {
             return openConnection();
@@ -43,24 +48,25 @@ public class Database {
         }
     }
 
-    //When we are done manipulating the database it is important to close the connection. This will
-    //End the transaction and allow us to either commit our changes to the database or rollback any
-    //changes that were made before we encountered a potential error.
-
-    //IMPORTANT: IF YOU FAIL TO CLOSE A CONNECTION AND TRY TO REOPEN THE DATABASE THIS WILL CAUSE THE
-    //DATABASE TO LOCK. YOUR CODE MUST ALWAYS INCLUDE A CLOSURE OF THE DATABASE NO MATTER WHAT ERRORS
-    //OR PROBLEMS YOU ENCOUNTER
+    /**
+     *Closes the connection to the database, choosing to commit it or not
+     *When we are done manipulating the database it is important to close the connection. This will
+     *End the transaction and allow us to either commit our changes to the database or rollback any
+     *changes that were made before we encountered a potential error.
+     *
+     *IMPORTANT: IF YOU FAIL TO CLOSE A CONNECTION AND TRY TO REOPEN THE DATABASE THIS WILL CAUSE THE
+     *DATABASE TO LOCK. YOUR CODE MUST ALWAYS INCLUDE A CLOSURE OF THE DATABASE NO MATTER WHAT ERRORS
+     *OR PROBLEMS YOU ENCOUNTER
+     * @param commit Commit or rollback the transaction
+     * @throws DataAccessException Any DAO errors
+     */
     public void closeConnection(boolean commit) throws DataAccessException {
         try {
-            if (commit) {
-                //This will commit the changes to the database
+            if (commit) { //This will commit the changes to the database
                 conn.commit();
-            } else {
-                //If we find out something went wrong, pass a false into closeConnection and this
-                //will rollback any changes we made during this connection
+            } else { //This will rollback any changes made during this connection's lifetime
                 conn.rollback();
             }
-
             conn.close();
             conn = null;
         } catch (SQLException e) {
@@ -68,17 +74,16 @@ public class Database {
             e.printStackTrace();
             throw new DataAccessException("Error: Unable to close database connection");
         }
-
     }
 
+    /**
+     * Creates the server's tables if they don't already exist (Events, Users, Persons, and Authorization Tokens)
+     * @throws DataAccessException Any DAO errors
+     */
     public void createTables() throws DataAccessException {
 
         try (Statement stmt = conn.createStatement()){
-            //First lets open our connection to our database.
 
-            //We pull out a statement from the connection we just established
-            //Statements are the basis for our transactions in SQL
-            //Format this string to be exactly like a sql create table command
             String sqlEventTable = "CREATE TABLE IF NOT EXISTS Events " +
                     "(" +
                     "EventID text not null unique, " +
@@ -94,7 +99,6 @@ public class Database {
                     "foreign key (AssociatedUsername) references Users(Username), " +
                     "foreign key (PersonID) references Persons(ID)" +
                     ")";
-
             stmt.executeUpdate(sqlEventTable);
 
             String sqlUserTable = "CREATE TABLE if not exists Users" +
@@ -108,7 +112,6 @@ public class Database {
                     "personID TEXT NOT NULL," +
                     "PRIMARY KEY(userName)" +
                     ")";
-
             stmt.executeUpdate(sqlUserTable);
 
             String sqlPersonTable = "CREATE TABLE if not exists Persons" +
@@ -126,7 +129,6 @@ public class Database {
                     "FOREIGN KEY(motherID) REFERENCES Persons(ID)," +
                     "PRIMARY KEY(ID)" +
                     ")";
-
             stmt.executeUpdate(sqlPersonTable);
 
             String sqlAuthTokenTable = "CREATE TABLE if not exists AuthorizationTokens" +
@@ -136,21 +138,19 @@ public class Database {
                     "FOREIGN KEY(userName) REFERENCES Users(userName)," +
                     "PRIMARY KEY(authToken)" +
                     ")";
-
             stmt.executeUpdate(sqlAuthTokenTable);
-
-            //if we got here without any problems we successfully created the table and can commit
         } catch (SQLException e) {
             System.out.println("Error in DAO - Database-DAO");
             e.printStackTrace();
             throw new DataAccessException("Error encountered while creating tables");
         }
-
-
     }
 
+    /**
+     * Clears all the tables of the sql database
+     * @return Returns 0 on success
+     */
     public int clearTables() throws DataAccessException {
-
         try (Statement stmt = conn.createStatement()){
             String sql = "DELETE FROM Events";
             stmt.executeUpdate(sql);

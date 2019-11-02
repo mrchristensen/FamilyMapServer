@@ -23,16 +23,12 @@ public class PersonDao extends Dao {
 
     /**
      * Adds a new person to the database
+     * @param myPerson Person object to insert
      */
     public void insert(Person myPerson) throws DataAccessException {
-        //We can structure our string to be similar to a sql command, but if we insert question
-        //marks we can change them later with help from the statement
         String sql = "INSERT INTO Persons (ID, associatedUsername, firstName, lastName, gender, " +
                 "fatherID, motherID, spouseID) VALUES(?,?,?,?,?,?,?,?)";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            //Using the statements built-in set(type) functions we can pick the question mark we want
-            //to fill in and give it a proper value. The first argument corresponds to the first
-            //question mark found in our sql String
             stmt.setString(1, myPerson.getPersonID());
             stmt.setString(2, myPerson.getAssociatedUsername());
             stmt.setString(3, myPerson.getFirstName());
@@ -49,10 +45,14 @@ public class PersonDao extends Dao {
         }
     }
 
+    /**
+     * Remove all the user's relatives from the person table
+     * @param username Username of the user
+     * @param id ID of the user's person object (so that we don't remove the user
+     */
     public void removeUsersRelatives(String username, String id) throws DataAccessException {
 
         String sql = "DELETE FROM Persons WHERE associatedUsername = ? AND ID != ?;";
-//        String sql = "DELETE FROM Persons WHERE associatedUsername = ?;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, id);
@@ -64,6 +64,9 @@ public class PersonDao extends Dao {
 
     }
 
+    /**
+     * Drops the table
+     */
     void dropTable() throws DataAccessException {
         String sql = "DROP TABLE Persons;";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -146,9 +149,7 @@ public class PersonDao extends Dao {
                     e.printStackTrace();
                 }
             }
-
         }
-
     }
 
 }

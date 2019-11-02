@@ -89,6 +89,9 @@ public class RegisterService extends Service {
         return new Person(personID, associatedUsername, firstName, lastName, gender);
     }
 
+    /**
+     * Helper function to create the a birth event for the passed person
+     */
     private void createBirthEvent(Person person) throws DataAccessException {
 
         Event myEvent = new Generation().genEvent(person, "birth", 1997);
@@ -103,6 +106,9 @@ public class RegisterService extends Service {
 
     }
 
+    /**
+     * Logs in the user
+     */
     private String login(RegisterRequest myRequest) {
         LoginRequest loginRequest = new LoginRequest();
 
@@ -113,6 +119,5 @@ public class RegisterService extends Service {
 
         return loginResult.getAuthTokenString();
     }
-
 
 }

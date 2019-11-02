@@ -68,9 +68,7 @@ public class LoadService extends Service{
 
             }
 
-
             db.closeConnection(true);
-
 
             result.setMessage("Successfully added " + numUsersAdded + " users, " + numPersonsAdded +
                     " persons, and " + numEventsAdded + " events to the database.");

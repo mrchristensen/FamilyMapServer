@@ -25,7 +25,6 @@ public class LoginService extends Service {
         try {
             LoginResult result = new LoginResult();
 
-
             //Make sure user exists
             Database db = new Database();
             Connection conn = db.getConnection();
@@ -53,15 +52,12 @@ public class LoginService extends Service {
 
             authTokenDao.insert(authToken);
 
-
             //If we got to this point is was a success
             result.setAuthToken(authToken.getAuthTokenString());
             result.setUserName(myRequest.getUsername());
             result.setPersonID(user.getPersonID());
 
-
             db.closeConnection(true);
-
 
             return result;
         } catch (DataAccessException e) {

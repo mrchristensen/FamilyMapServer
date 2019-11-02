@@ -11,17 +11,18 @@ import java.sql.Connection;
 import static org.junit.jupiter.api.Assertions.*;
 
 //We will use this to test that our insert method is working and failing in the right ways
-public class UserDaoTest {
+class UserDaoTest {
     private Database db;
     private User bestUser;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         //here we can set up any classes or variables we will need for the rest of our tests
         //lets create a new database
         db = new Database();
         //and a new event with random data
-        bestUser = new User("userName", "password", "email", "firstName", "lastName", "f", "personID");
+        bestUser = new User("userName", "password", "email", "firstName",
+                "lastName", "f", "personID");
         //and make sure to initialize our tables since we don't know if our database files exist yet
         db.openConnection();
         db.createTables();
@@ -29,7 +30,7 @@ public class UserDaoTest {
     }
 
     @AfterEach
-    public void tearDown() throws Exception {
+    void tearDown() throws Exception {
         //here we can get rid of anything from our tests we don't want to affect the rest of our program
         //lets clear the tables so that any data we entered for testing doesn't linger in our files
         db.openConnection();
@@ -38,7 +39,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void insertPass() throws Exception {
+    void insertPass() throws Exception {
         //We want to make sure insert works
         //First lets create an Event that we'll set to null. We'll use this to make sure what we put
         //in the database is actually there.
@@ -69,7 +70,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void insertFail() throws Exception {
+    void insertFail() throws Exception {
         //lets do this test again but this time lets try to make it fail
 
         // NOTE: The correct way to test for an exception in Junit 5 is to use an assertThrows
@@ -115,7 +116,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void getPass() throws Exception {
+    void getPass() throws Exception {
         //We want to make sure insert works
         //First lets create an Event that we'll set to null. We'll use this to make sure what we put
         //in the database is actually there.
@@ -146,7 +147,7 @@ public class UserDaoTest {
     }
 
     @Test
-    public void getFail() throws Exception {
+    void getFail() throws Exception {
         //We want to make sure insert works
         //First lets create an Event that we'll set to null. We'll use this to make sure what we put
         //in the database is actually there.
